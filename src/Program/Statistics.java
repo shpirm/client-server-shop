@@ -16,6 +16,8 @@ public class Statistics {
         text.setBackground(new Color(255, 255, 255));
 
         String s = group.getName() + "\n";
+        s += "Опис: " + group.getDescription() + "\n";
+
         long sumMoney = 0; //сума грошей
         int q = 0; //кількість одиниць товару
 
@@ -47,6 +49,8 @@ public class Statistics {
             s = s + "\n\nВ магазині товарів на суму: " + sumMoney + " гривень";
         }
         s = s + "\nКількість одиниць товару: " + q;
+
+        s += "Загальна вартість товарів в групі: " + calculateGroupMoney(group) + "\n";
 
         text.setText(s);
 
@@ -86,6 +90,9 @@ public class Statistics {
 
                 s = s + "\n\n";
                 s = s + store.getGroups().get(i).getName().toUpperCase() + "\n";
+                s+= "Опис: " + store.getGroups().get(i).getDescription() + "\n";
+                s+= "Загальна вартість товарів в групі: " + calculateGroupMoney(store.getGroups().get(i)) + "\n";
+
                 for (int d = 0; d < store.getGroups().get(i).getProducts().size(); d++) {
 
                     float price = store.getGroups().get(i).getProducts().get(d).getPrice();
@@ -159,15 +166,30 @@ public class Statistics {
         return q;
     }
 
+    public static double calculateGroupMoney(Group group){
+        double q = 0;
+        if(group.getProducts() != null){
+            for(int i = 0; i < group.getProducts().size(); i++) {
+                q += group.getProducts().get(i).getPrice() * group.getProducts().get(i).getNumber();
+            }
+        }
+        return q;
+    }
+
     //записує все в файл
     public static void addGroupToFile(Group group) {
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("D:/" + group.getName() + ".txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./" + group.getName() + ".txt"))) {
             bw.write(group.getName().toUpperCase());
+            bw.newLine();
+            bw.write("Опис: " + group.getDescription());
+            bw.newLine();
+            bw.write("Вартість товарів в цій групі: " + calculateGroupMoney(group));
             bw.newLine();
             if (group.getProducts() != null) {
                 for (int d = 0; d < group.getProducts().size(); d++) {
                     bw.newLine();
+                    bw.write(group.getProducts().get(d).getName().toUpperCase());
                     bw.write(group.getProducts().get(d).getName().toUpperCase());
                     bw.newLine();
                     bw.write("Ціна: " + group.getProducts().get(d).getPrice());
@@ -176,7 +198,7 @@ public class Statistics {
                     bw.newLine();
                     bw.write("Виробник: " + group.getProducts().get(d).getBrand());
                     bw.newLine();
-                    bw.write("Опис " + group.getProducts().get(d).getDescription());
+                    bw.write("Опис: " + group.getProducts().get(d).getDescription());
                     bw.newLine();
                 }
                 bw.newLine();
@@ -201,6 +223,8 @@ public class Statistics {
                 if (store.getGroups().get(i).getProducts() != null) {
                     bw.newLine();
                     bw.write(store.getGroups().get(i).getName().toUpperCase());
+                    bw.write("Опис: " + store.getGroups().get(i).getDescription());
+                    bw.write("Загальна вартість товарів в групі" + calculateGroupMoney(store.getGroups().get(i)));
                     bw.newLine();
                     for (int d = 0; d < store.getGroups().get(i).getProducts().size(); d++) {
                         bw.newLine();

@@ -7,7 +7,7 @@ public class Store {
      * Конструктор створення складу
      */
     public Store() {
-        groups = new ArrayList<>(1);
+        groups = new ArrayList<Group>(1);
     }
     /**
      * Додає групу товарів до складу
@@ -70,6 +70,26 @@ public class Store {
     public ArrayList<Group> getGroups() {
         return groups;
     }
+
+    public ArrayList<String> getGroupsNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(int i = 0; i < groups.size(); i++){
+            names.add(groups.get(i).getName().toLowerCase());
+        }
+        return names;
+    }
+
+    public ArrayList<String> getProductNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(int i = 0; i < groups.size(); i++){
+            Group g = groups.get(i);
+            for(int j = 0; j < g.getProducts().size(); j++){
+                names.add(g.getProducts().get(j).getName().toLowerCase());
+            }
+        }
+        return names;
+    }
+
     public String toString() {
         String str = "";
         for (Group group : groups) {

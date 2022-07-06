@@ -482,9 +482,10 @@ public class GroupPanel extends JPanel {
         buttonsPanel.add(saveButton);
         return buttonsPanel;
     }
-    public static ArrayList<String> unicProdNames = new
-            ArrayList<>();
+
     private void addProduct() throws NumberFormatException {
+        ArrayList<String> unicProdNames = programWindow.getStore().getProductNames();
+        System.out.println(unicProdNames);
         try {
             if
             (!unicProdNames.contains(nameArea.getText().toLowerCase())) {

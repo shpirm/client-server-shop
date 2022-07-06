@@ -264,7 +264,8 @@ public class StorePanel extends JPanel {
         });
         return getBack;
     }
-    public static ArrayList<String> unicCatNames = new ArrayList<>();
+
+
     private JButton saveNewCategoryButton() {
         JButton saveCategory = new JButton("Зберегти");
         saveCategory.setBackground(new Color(128, 118, 146));
@@ -273,6 +274,8 @@ public class StorePanel extends JPanel {
         saveCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ArrayList<String> unicCatNames = programWindow.getStore().getGroupsNames();
+                System.out.println(unicCatNames);
                 if
                 (!unicCatNames.contains(newCategory.getText().toLowerCase()) &&
                         !newCategory.getText().equals("")
