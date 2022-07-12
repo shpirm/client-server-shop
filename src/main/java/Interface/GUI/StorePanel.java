@@ -132,7 +132,7 @@ public class StorePanel extends JPanel {
         southPanel.setBorder(new LineBorder(Color.WHITE));
         southPanel.setPreferredSize(new Dimension(getWidth(), 33));
         southPanel.add(addCategoryButton());
-        southPanel.add(createFileButton());
+        //southPanel.add(createFileButton());
         southPanel.add(statisticsButton());
         return southPanel;
     }
@@ -166,7 +166,7 @@ public class StorePanel extends JPanel {
         });
         return addCat;
     }
-    private JButton createFileButton() {
+/*    private JButton createFileButton() {
         JButton addCat = new JButton("Зберегти");
         addCat.setPreferredSize(new Dimension(120, 25));
         addCat.setBackground(new Color(128, 118, 146));
@@ -179,7 +179,7 @@ public class StorePanel extends JPanel {
             }
         });
         return addCat;
-    }
+    }*/
 
     private JPanel addCategoryPanel() {
         JPanel addCategoryPanel = new JPanel(new BorderLayout());
@@ -285,10 +285,8 @@ public class StorePanel extends JPanel {
                         && !newDetails.getText().equals("")) {
 
                     unicCatNames.add(newCategory.getText().toLowerCase());
-                    Group newGroup = new Group(newCategory.getText(),
+                    programWindow.getStore().addGroup(newCategory.getText(),
                             newDetails.getText());
-                    newGroup.setDescription(newDetails.getText());
-                    programWindow.getStore().addGroup(newGroup);
                     programWindow.remove(StorePanel.this);
                     programWindow.openStoreWindow();
                 } else if ((newCategory.getText().equals("") ||

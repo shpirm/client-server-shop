@@ -66,7 +66,7 @@ public class ServerTCP extends Thread {
     }
 
     private class ClientHandler extends Thread {
-        private static int staticUserID = 0;
+        private int staticUserID = 0;
         private final int userID;
         private final Socket clientSocket;
 

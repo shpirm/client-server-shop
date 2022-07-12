@@ -1,22 +1,29 @@
 package Interface.Program;
+import Structure.DataBase.Connector;
+import Structure.DataBase.Criteria;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 public class Store {
-    ArrayList<Group> groups; //список груп товарів
+    //ArrayList<Group> groups; //список груп товарів
     /**
      * Конструктор створення складу
      */
-    public Store() {
-        groups = new ArrayList<Group>(1);
-    }
     /**
      * Додає групу товарів до складу
      *
-     * @param group група товарів, яку необхідно додати
+     * @param groupName назва групи товарів, яку необхідно додати
      * @return true, якщо додавання успішне, в іншому випадку - false
      */
-    public boolean addGroup(Group group) {
-        return groups.add(group);
+    public boolean addGroup(String groupName, String description) {
+        try {
+            new Connector().insertGroup(groupName, description);
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
     /**
      * Видаляє групу товарів зі складу
@@ -25,53 +32,38 @@ public class Store {
      * @return true, якщо видалення успішне, в іншому випадку - false
      */
     public boolean deleteGroup(String name) {
-        return groups.remove(new Group(name));
+        try {
+            new Connector().deleteGroup(name);
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
     public Group getGroup(String name) {
         try {
-            return groups.get(groups.indexOf(new Group(name)));
-        } catch (IndexOutOfBoundsException ex) {
-            return null;
+            return new Connector().readGroup(name);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
+        return null;
     }
     /**
      * Повертає список усіх продуктів складу
      */
     public ArrayList<Product> getProducts() {
-        ArrayList<Product> products = new ArrayList<>(1);
-        for (Group group : groups) {
-            for (Product product : group.products) {
-                products.add(product);
-            }
-        }
-        return products;
+        return new Connector().productListByCriteria(new Criteria());
     }
     public ArrayList<Product> findProducts(String searchText) {
         String text = searchText.toLowerCase();
-        ArrayList<Product> products = new ArrayList<>(1);
-        for (Group group : groups) {
-            if (group != null) {
-                if (group.getProducts()!=null) {
-                    for (Product product : group.getProducts()) {
-                        if (product != null) {
-                            String name
-                                    =product.getName().toLowerCase(Locale.ROOT);
-                            if (name.contains(text)) {
-                                products.add(product);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        System.out.println(products.size());
-        return products;
+        return new Connector().productListByCriteria(new Criteria().setName(text));
     }
     public ArrayList<Group> getGroups() {
-        return groups;
+        return new Connector().groupListByCriteria(new Criteria());
     }
 
     public ArrayList<String> getGroupsNames() {
+        ArrayList<Group> groups = new Connector().groupListByCriteria(new Criteria());
         ArrayList<String> names = new ArrayList<>();
         for(int i = 0; i < groups.size(); i++){
             names.add(groups.get(i).getName().toLowerCase());
@@ -80,18 +72,17 @@ public class Store {
     }
 
     public ArrayList<String> getProductNames() {
+        ArrayList<Product> products = new Connector().productListByCriteria(new Criteria());
         ArrayList<String> names = new ArrayList<>();
-        for(int i = 0; i < groups.size(); i++){
-            Group g = groups.get(i);
-            for(int j = 0; j < g.getProducts().size(); j++){
-                names.add(g.getProducts().get(j).getName().toLowerCase());
-            }
+        for(int i = 0; i < products.size(); i++){
+            names.add(products.get(i).getName().toLowerCase());
         }
         return names;
     }
 
     public String toString() {
         String str = "";
+        ArrayList<Group> groups = new Connector().groupListByCriteria(new Criteria());
         for (Group group : groups) {
             str += group + "\n\n";
         }

@@ -1,15 +1,24 @@
-package Interface.GUI;
-import Interface.Program.Product;
 
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+package Interface.GUI;
+        import Interface.Program.Product;
+        import Structure.DataBase.Connector;
+
+        import javax.swing.*;
+        import javax.swing.border.LineBorder;
+        import java.awt.*;
+        import java.awt.event.ActionEvent;
+        import java.awt.event.ActionListener;
+        import java.sql.SQLException;
 
 public class ProductPanel extends JPanel {
     private Product product;
     private ProgramWindow programWindow;
+    private JTextArea nameArea;
+    private JTextArea priceArea;
+    private JTextArea numberArea;
+    private JTextArea brandArea;
+    private JTextArea groupArea;
+    private JTextArea descriptionArea;
     ProductPanel(Product product, ProgramWindow programWindow) {
         this.product = product;
         this.programWindow = programWindow;
@@ -55,6 +64,7 @@ public class ProductPanel extends JPanel {
         info.add(falsePanel());
         infoPanel.add(info, BorderLayout.NORTH);
         infoPanel.add(descriptionPanel(), BorderLayout.CENTER);
+        infoPanel.add(savePanel(), BorderLayout.SOUTH);
         return infoPanel;
     }
     private JPanel namePanel() {
@@ -65,24 +75,12 @@ public class ProductPanel extends JPanel {
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JTextArea nameArea = new JTextArea(" " + product.getName() +
+        nameArea = new JTextArea(" " + product.getName() +
                 "");
         nameArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         nameArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JButton nameButton = new JButton("Зберегти");
-        nameButton.setBackground(new Color(128, 118, 146));
-        nameButton.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        nameButton.setForeground(new Color(250, 250, 250));
-        nameButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        nameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                product.setName(nameArea.getText());
-            }
-        });
         namePanel.add(nameLabel);
         namePanel.add(nameArea);
-        namePanel.add(nameButton);
         return namePanel;
     }
     private JPanel pricePanel() {
@@ -93,30 +91,12 @@ public class ProductPanel extends JPanel {
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         priceLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JTextArea priceArea = new JTextArea(" " + product.getPrice()
+        priceArea = new JTextArea(" " + product.getPrice()
                 + "");
         priceArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         priceArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JButton priceButton = new JButton("Зберегти");
-        priceButton.setBackground(new Color(128, 118, 146));
-        priceButton.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        priceButton.setForeground(new Color(250, 250, 250));
-        priceButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        priceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (priceArea.getText().matches("[0-9]*")) {
-
-                    product.setPrice(Integer.valueOf(priceArea.getText()));
-                    titlePanel();
-                } else {
-                    priceArea.setText(product.getPrice() + "");
-                }
-            }
-        });
         pricePanel.add(priceLabel);
         pricePanel.add(priceArea);
-        pricePanel.add(priceButton);
         return pricePanel;
     }
     private JPanel numberPanel() {
@@ -127,29 +107,12 @@ public class ProductPanel extends JPanel {
         numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         numberLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JTextArea numberArea = new JTextArea(" " +
+        numberArea = new JTextArea(" " +
                 product.getNumber() + "");
         numberArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         numberArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JButton numberButton = new JButton("Зберегти");
-        numberButton.setBackground(new Color(128, 118, 146));
-        numberButton.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        numberButton.setForeground(new Color(250, 250, 250));
-        numberButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        numberButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (numberArea.getText().matches("[0-9]*")) {
-
-                    product.setNumber(Integer.valueOf(numberArea.getText()));
-                } else {
-                    numberArea.setText(product.getNumber() + "");
-                }
-            }
-        });
         numberPanel.add(numberLabel);
         numberPanel.add(numberArea);
-        numberPanel.add(numberButton);
         return numberPanel;
     }
     private JPanel brandPanel() {
@@ -160,25 +123,33 @@ public class ProductPanel extends JPanel {
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
         brandLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JTextArea brandArea = new JTextArea(" " + product.getBrand()
+        brandArea = new JTextArea(" " + product.getBrand()
                 + "");
         brandArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         brandArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JButton brandButton = new JButton("Зберегти");
-        brandButton.setBackground(new Color(128, 118, 146));
-        brandButton.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        brandButton.setForeground(new Color(250, 250, 250));
-        brandButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        brandButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                product.setBrand(brandArea.getText());
-            }
-        });
         brandPanel.add(brandLabel);
         brandPanel.add(brandArea);
-        brandPanel.add(brandButton);
         return brandPanel;
+    }
+    private JPanel groupPanel() {
+        JPanel groupPanel = new JPanel(new GridLayout(1, 0));
+        groupPanel.setBackground(new Color(236, 234, 232));
+        JLabel groupLabel = new JLabel("Виробник: ");
+        groupLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        groupLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        groupLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        groupLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
+        try {
+            groupArea = new JTextArea(" " + new Connector().readGroup(product.getGroupID()).getName()
+                    + "");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        groupArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
+        groupArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
+        groupPanel.add(groupLabel);
+        groupPanel.add(brandArea);
+        return groupPanel;
     }
     private JPanel descriptionPanel() {
         JPanel descriptionPanel = new JPanel(new BorderLayout());
@@ -192,30 +163,71 @@ public class ProductPanel extends JPanel {
 
         descriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         descriptionLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JTextArea descriptionArea = new JTextArea(" " +
+        descriptionArea = new JTextArea(" " +
                 product.getDescription() + "");
         descriptionArea.setFont(new Font(Font.SERIF, Font.PLAIN,
                 18));
         descriptionArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
         descriptionArea.setSize(300, 100);
-        JButton descriptionButton = new JButton("Зберегти");
-        descriptionButton.setBackground(new Color(128, 118, 146));
-        descriptionButton.setFont(new Font(Font.SERIF, Font.PLAIN,
-                16));
-        descriptionButton.setForeground(new Color(250, 250, 250));
-        descriptionButton.setBorder(new
-                LineBorder(Color.LIGHT_GRAY));
-        descriptionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                product.setDescription(descriptionArea.getText());
-            }
-        });
         descriptionPanel.add(descriptionLabel, BorderLayout.NORTH);
         descriptionPanel.add(descriptionArea, BorderLayout.CENTER);
-        descriptionPanel.add(descriptionButton, BorderLayout.SOUTH);
         return descriptionPanel;
     }
+
+    private JPanel savePanel(){
+        JPanel savePanel = new JPanel(new GridLayout(0,1));
+        savePanel.setBackground(new Color(198, 233, 243));
+        JButton saveButton = new JButton("Зберегти");
+        saveButton.setBackground(new Color(128, 118, 146));
+        saveButton.setFont(new Font(Font.SERIF, Font.PLAIN,
+                25));
+        saveButton.setForeground(new Color(250, 250, 250));
+        saveButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = product.getName();
+                double price = product.getPrice();
+                int amount = product.getNumber();
+                String group = "";
+                try {
+                    group = new Connector().readGroup(product.getGroupID()).getName();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                String brand = product.getBrand();
+                String description;
+                if(nameArea.getText().trim().equals("")){
+                    showIllegalFormat("Назву");
+                    nameArea.setText(product.getName().trim());
+                }else  name = nameArea.getText().trim();
+
+                if(!(priceArea.getText().trim().matches("[0-9]{1,13}(\\.[0-9]*)?"))){
+                    showIllegalFormat("Ціну");
+                    priceArea.setText(product.getPrice() + "");
+                } else price = Double.valueOf(priceArea.getText().trim());
+                if (!(numberArea.getText().trim().matches("[0-9]*"))) {
+                    showIllegalFormat("Кількість");
+                    numberArea.setText(product.getNumber() + "");
+                } else amount = Integer.valueOf(numberArea.getText().trim());
+                if(brandArea.getText().trim().equals("")){
+                    showIllegalFormat("Назву бренду");
+                    brandArea.setText(product.getBrand().trim());
+                } else brand = brandArea.getText().trim();
+
+                description = descriptionArea.getText().trim();
+                try {
+                    new Connector().updateProduct(product.getName(), name, amount, price, group, brand, description );
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        });
+
+        savePanel.add(saveButton);
+        return savePanel;
+    }
+
     private JPanel falsePanel() {
         JPanel falsePanel = new JPanel(new GridLayout(0, 1));
         falsePanel.setBackground(new Color(198, 233, 243));
@@ -230,7 +242,6 @@ public class ProductPanel extends JPanel {
         getBackButton.setForeground(new Color(250, 250, 250));
         getBackButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
         getBackButton.addActionListener(new ActionListener() {
-            // TODO: 14.04.2021 !!!!
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeAll();
@@ -304,7 +315,7 @@ public class ProductPanel extends JPanel {
         adProductWindow.add(centerPanel, BorderLayout.CENTER);
         adProductWindow.add(southPanel, BorderLayout.EAST);
         JLabel howManyLabel = new JLabel("Cкільки одиниць продукту додати?");
-                howManyLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        howManyLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         JTextField textField = new JTextField();
         textField.setSize(50, 50);
         textField.setFont(new Font(Font.SERIF, Font.PLAIN, 45));
@@ -351,7 +362,7 @@ public class ProductPanel extends JPanel {
         reduceProductWindow.add(centerPanel, BorderLayout.CENTER);
         reduceProductWindow.add(southPanel, BorderLayout.EAST);
         JLabel howMany = new JLabel("Cкільки одиниць продукту списати?");
-                howMany.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        howMany.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         JTextField textField = new JTextField();
         textField.setSize(50, 50);
         textField.setFont(new Font(Font.SERIF, Font.PLAIN, 45));
@@ -492,17 +503,20 @@ public class ProductPanel extends JPanel {
         yes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (programWindow.getCurrentGroup()!=null) {
+                try {
+                    if (programWindow.getCurrentGroup() != null) {
 
-                    programWindow.getCurrentGroup().deleteProduct(product.getName());
-                    programWindow.remove(ProductPanel.this);
+                        new Connector().deleteProduct(product.getName());
+                        programWindow.remove(ProductPanel.this);
 
-                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
-                    ad1.setVisible(false);
-                } else {
-                    product.setDeleted(true);
-                    programWindow.openStoreWindow();
-                    ad1.setVisible(false);
+                        programWindow.openGroupWindow(programWindow.getCurrentGroup());
+                        ad1.setVisible(false);
+                    } else {
+                        programWindow.openStoreWindow();
+                        ad1.setVisible(false);
+                    }
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
                 }
             }
         });
@@ -516,4 +530,33 @@ public class ProductPanel extends JPanel {
             }
         });
     }
+
+    public void showIllegalFormat(String message){
+        JFrame errorMessage = new JFrame();
+        errorMessage.setSize(500, 150);
+        errorMessage.setLocationRelativeTo(null);
+        JPanel northPanel1 = new JPanel();
+        JPanel southPanel1 = new JPanel(new GridLayout(1, 1));
+        errorMessage.add(northPanel1, BorderLayout.CENTER);
+        errorMessage.add(southPanel1, BorderLayout.SOUTH);
+        northPanel1.setBackground(new Color(250, 250, 250));
+        southPanel1.setBackground(new Color(236, 234, 232));
+        JLabel label = new JLabel(message + " введено некоректно.");
+        label.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+        JButton yes = new JButton("Ок");
+        yes.setBackground(new Color(128, 118, 146));
+        yes.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
+        yes.setForeground(new Color(250, 250, 250));
+        northPanel1.add(label, BorderLayout.CENTER);
+        southPanel1.add(yes, BorderLayout.WEST);
+        errorMessage.setVisible(true);
+        yes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                errorMessage.removeAll();
+                errorMessage.setVisible(false);
+            }
+        });
+    }
 }
+
