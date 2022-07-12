@@ -4,9 +4,13 @@ import Interface.Program.Group;
 import Interface.Program.Product;
 import Interface.Program.Statistics;
 import Interface.Program.Store;
+import Structure.Database.Connections;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class ProgramWindow extends JFrame {
     private Store store;
     private Group currentGroup;
@@ -14,8 +18,16 @@ public class ProgramWindow extends JFrame {
     private StorePanel storePanel;
     private GroupPanel groupPanel;
     private ProductPanel productPanel;
+
+    public ArrayList<Connections> getUsers() {
+        return users;
+    }
+
+    private ArrayList<Connections> users = new ArrayList<>();
     private SearchPanel searchPanel;
     private JPanel currentWindow;
+    private StartServerPanel startServerPanel;
+    private ConnectionsPanel connectionsPanel;
 
     public ProgramWindow(Store store) {
         super("Склад");
@@ -29,8 +41,11 @@ public class ProgramWindow extends JFrame {
     }
 
     private void init() {
-        storePanel = new StorePanel(store, this);
-        add(storePanel);
+//        storePanel = new StorePanel(store, this);
+//        add(storePanel);
+
+        connectionsPanel = new ConnectionsPanel(store, this);
+        add(connectionsPanel);
     }
 
     public void openSearchWindow(String searchText) {
@@ -90,6 +105,12 @@ public class ProgramWindow extends JFrame {
         }
         productPanel = new ProductPanel(product, this);
         add(productPanel);
+        revalidate();
+    }
+
+    public void openConnectionPanel(){
+        connectionsPanel = new ConnectionsPanel(store, this);
+        add(connectionsPanel);
         revalidate();
     }
 

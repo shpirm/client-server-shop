@@ -103,7 +103,6 @@ public class StorePanel extends JPanel {
     }
     private JPanel falseProductPanel() {
         JPanel oneProductPanel = new JPanel(new BorderLayout());
-// oneProductPanel.setToolTipText(product.getDescription());
         oneProductPanel.setBorder(new LineBorder(Color.WHITE));
         oneProductPanel.setPreferredSize(new Dimension(100, 40));
         oneProductPanel.setBackground(new Color(255, 253, 253));
@@ -112,7 +111,6 @@ public class StorePanel extends JPanel {
     private JButton oneCategoryPanel(Group group) {
         JButton button = new JButton(group.getName());
         button.setFont(new Font("Century", Font.PLAIN, 18));
-// button.setToolTipText(group.getDescription());
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -131,11 +129,29 @@ public class StorePanel extends JPanel {
         southPanel.setBackground(new Color(198, 233, 243));
         southPanel.setBorder(new LineBorder(Color.WHITE));
         southPanel.setPreferredSize(new Dimension(getWidth(), 33));
+        southPanel.add(backButton());
         southPanel.add(addCategoryButton());
         southPanel.add(createFileButton());
         southPanel.add(statisticsButton());
         return southPanel;
     }
+
+    private JButton backButton() {
+        JButton back = new JButton("Назад"); //Переносить на сторінку назад
+        back.setPreferredSize(new Dimension(120, 25));
+        back.setBackground(new Color(128, 118, 146));
+        back.setForeground(new Color(255, 253, 253));
+        back.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeAll();
+                programWindow.openConnectionPanel();
+            }
+        });
+        return back;
+    }
+
     private JButton addCategoryButton() {
         JButton addCat = new JButton("Додати"); //Переносить на сторінку "Додати категорію"
         addCat.setPreferredSize(new Dimension(120, 25));

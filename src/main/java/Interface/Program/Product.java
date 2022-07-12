@@ -4,7 +4,7 @@ public class Product {
     private String description;
     private String brand;
     private boolean deleted = false;
-    private float price;
+    private double price;
     private int number;
     private static int numberAll = 0;
 
@@ -17,7 +17,7 @@ public class Product {
      * @param brand       виробник товару
      * @param description опис товару
      */
-    public Product(String name, int price, int number, String brand,
+    public Product(String name, double price, int number, String brand,
                    String description) {
         this.name = name;
         this.price = price;
@@ -82,7 +82,7 @@ public class Product {
         return brand;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -106,7 +106,7 @@ public class Product {
         this.brand = brand;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

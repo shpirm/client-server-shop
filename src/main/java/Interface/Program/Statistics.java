@@ -24,7 +24,7 @@ public class Statistics {
         for (int d = 0; d < group.getProducts().size(); d++) {
             if (group.getProducts() != null) {
 
-                float price = group.getProducts().get(d).getPrice();
+                double price = group.getProducts().get(d).getPrice();
                 int num = group.getProducts().get(d).getNumber();
                 sumMoney += price * num;
                 q+=num;
@@ -95,7 +95,7 @@ public class Statistics {
 
                 for (int d = 0; d < store.getGroups().get(i).getProducts().size(); d++) {
 
-                    float price = store.getGroups().get(i).getProducts().get(d).getPrice();
+                    double price = store.getGroups().get(i).getProducts().get(d).getPrice();
                     int num = store.getGroups().get(i).getProducts().get(d).getNumber();
                     sumMoney += price * num;
                     q+=num;

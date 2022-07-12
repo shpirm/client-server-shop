@@ -3,10 +3,14 @@ package Interface.GUI;
 import Interface.Program.Group;
 import Interface.Program.Product;
 import Interface.Program.Store;
+import Structure.Client.ClientTCP;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import org.json.JSONObject;
 
 public class Tester {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         Store store = new Store();
         Product TV = new Product("Телевізор", 37000, 5, "LG", "Діагональ екрана 55 / Роздільна здатність 3840x2160");
@@ -21,11 +25,6 @@ public class Tester {
 
         //додаємо вже створені товари до групи
         appliances.addProduct(TV);
-        appliances.addProduct(fridge);
-        appliances.addProduct(washingMachine);
-        appliances.addProduct(smartphone);
-        appliances.addProduct(laptop);
-        appliances.addProduct(cooker);
         appliances.addProduct(fridge);
         appliances.addProduct(washingMachine);
         appliances.addProduct(smartphone);
@@ -52,11 +51,6 @@ public class Tester {
         instruments.addProduct(piano);
         instruments.addProduct(cello);
         instruments.addProduct(violin);
-        instruments.addProduct(synt);
-        instruments.addProduct(royalPiano);
-        instruments.addProduct(sax);
-        instruments.addProduct(guitar);
-        instruments.addProduct(basGuitar);
         instruments.addProduct(synt);
         instruments.addProduct(royalPiano);
         instruments.addProduct(sax);

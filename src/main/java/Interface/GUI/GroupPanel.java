@@ -509,7 +509,7 @@ public class GroupPanel extends JPanel {
             showIllegalFormat();
         }
     }
-    private void showIllegalFormat(){
+    public void showIllegalFormat(){
         JFrame errorMessage = new JFrame();
         errorMessage.setSize(500, 150);
         errorMessage.setLocationRelativeTo(null);
