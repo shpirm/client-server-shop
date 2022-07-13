@@ -2,6 +2,7 @@ package Interface.Program;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Store {
     public ArrayList<Group> groups = new ArrayList<>(); //список груп товарів
@@ -43,7 +44,11 @@ public class Store {
 //        return false;
 //    }
     public Group getGroup(String name) {
-        for (Group group : groups) if (group.getName() == name) return group;
+        System.out.println(groups);
+        for (Group group : groups) {
+            if (Objects.equals(group.getName(), name)) return group;
+            System.out.println(group);
+        }
         return null;
     }
 //    /**

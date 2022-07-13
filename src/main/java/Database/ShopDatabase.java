@@ -300,7 +300,6 @@ public class ShopDatabase {
             res.close();
             statement.close();
         }
-        System.out.println(list);
         return list;
     }
 

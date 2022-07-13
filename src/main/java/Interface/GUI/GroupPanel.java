@@ -14,18 +14,21 @@ import java.util.ArrayList;
 public class GroupPanel extends JPanel {
     private Group group;
     private ProgramWindow programWindow;
+
     GroupPanel(Group group, ProgramWindow programWindow) {
         this.programWindow = programWindow;
         this.group = group;
         this.setLayout(new BorderLayout());
         init();
     }
+
     private void init() {
         setBackground(new Color(198, 233, 243));
         add(northPanel(), "North");
         add(centerPanel(), "Center");
         add(southPanel(), "South");
     }
+
     private JPanel northPanel() {
         JPanel northPanel = new JPanel(new GridLayout(3, 1));
         northPanel.add(titleProductPanel());
@@ -33,6 +36,7 @@ public class GroupPanel extends JPanel {
         northPanel.add(productsTitle());
         return northPanel;
     }
+
     private JPanel titleProductPanel() {
         JPanel titlePanel = new JPanel(new
                 FlowLayout(FlowLayout.CENTER));
@@ -43,6 +47,7 @@ public class GroupPanel extends JPanel {
         titlePanel.add(title);
         return titlePanel;
     }
+
     private JPanel searchPanel() {
         JPanel searchPanel = new JPanel((new FlowLayout()));
         searchPanel.setBackground(new Color(198, 233, 243));
@@ -64,6 +69,7 @@ public class GroupPanel extends JPanel {
         searchPanel.add(searchButton);
         return searchPanel;
     }
+
     private JPanel productsTitle() {
         JPanel productsTitle = new JPanel(new FlowLayout());
         productsTitle.setBackground(new Color(198, 233, 243));
@@ -73,50 +79,52 @@ public class GroupPanel extends JPanel {
         productsTitle.add(products);
         return productsTitle;
     }
+
     private JPanel centerPanel() {
         JPanel centrePanel = new JPanel(new
                 FlowLayout(FlowLayout.CENTER));
         centrePanel.setBackground(new Color(198, 233, 243));
-    //    centrePanel.add(scrollProductsPanel());
+        centrePanel.add(scrollProductsPanel());
         return centrePanel;
     }
-//    private JScrollPane scrollProductsPanel() {
-//        JPanel panel = new JPanel(new BorderLayout());
-//        panel.setBackground(new Color(198, 233, 243));
-//        panel.setBackground(Color.WHITE);
-//        panel.add(header(), BorderLayout.NORTH);
-//        JPanel prodPanel = new JPanel(new GridLayout(0, 1));
-//        try {
-//            ArrayList<Product> productList = new Connector().getAllProductsInGroup(group.getName());
-//            if (productList != null) {
-//                for (int i = 0; i < productList.size(); i++) {
-//
-//                    prodPanel.add(oneProductPanel(productList.get(i)));
-//                }
-//                if (productList.size() < 9) {
-//                    for (int n = 0; n < 9 - productList.size();
-//                         n++) {
-//                        prodPanel.add(falseProductPanel());
-//                    }
-//                }
-//            }
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//        panel.add(prodPanel, BorderLayout.CENTER);
-//        JScrollPane scroll = new JScrollPane(panel);
-//        scroll.setBackground(new Color(198, 233, 243));
-//        scroll.setPreferredSize(new Dimension(700, 400));
-//        return scroll;
-//    }
+
+    private JScrollPane scrollProductsPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(198, 233, 243));
+        panel.setBackground(Color.WHITE);
+        panel.add(header(), BorderLayout.NORTH);
+        JPanel prodPanel = new JPanel(new GridLayout(0, 1));
+
+        ArrayList<Product> productList = group.getProducts();
+        if (productList != null) {
+            for (int i = 0; i < productList.size(); i++) {
+
+                prodPanel.add(oneProductPanel(productList.get(i)));
+            }
+            if (productList.size() < 9) {
+                for (int n = 0; n < 9 - productList.size();
+                     n++) {
+                    prodPanel.add(falseProductPanel());
+                }
+            }
+        }
+
+        panel.add(prodPanel, BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.setBackground(new Color(198, 233, 243));
+        scroll.setPreferredSize(new Dimension(700, 400));
+        return scroll;
+    }
+
     private JPanel falseProductPanel() {
         JPanel oneProductPanel = new JPanel(new BorderLayout());
-// oneProductPanel.setToolTipText(product.getDescription());
+      //  oneProductPanel.setToolTipText(product.getDescription());
         oneProductPanel.setBorder(new LineBorder(Color.WHITE));
         oneProductPanel.setPreferredSize(new Dimension(100, 40));
         oneProductPanel.setBackground(new Color(255, 253, 253));
         return oneProductPanel;
     }
+
     private JPanel header() {
         JPanel headerTable = new JPanel(new GridLayout(1, 0));
         headerTable.setPreferredSize(new Dimension(200, 40));
@@ -162,6 +170,7 @@ public class GroupPanel extends JPanel {
         headerTable.add(statisticsButton);
         return headerTable;
     }
+
     private JPanel fullProductPanel(Product product) {
         JPanel productPanel = new JPanel(new GridLayout(1, 0));
         productPanel.setPreferredSize(new Dimension(200, 20));
@@ -170,7 +179,7 @@ public class GroupPanel extends JPanel {
         productName.setBorder(new LineBorder(Color.LIGHT_GRAY));
         productName.setFont(new Font("Century", Font.PLAIN, 16));
         JLabel productPrice = new JLabel("" + product.getPrice() + " грн");
-                productPrice.setHorizontalAlignment(SwingConstants.CENTER);
+        productPrice.setHorizontalAlignment(SwingConstants.CENTER);
         productPrice.setSize(30, 20);
         productPrice.setFont(new Font("Century", Font.PLAIN, 16));
         productPrice.setBorder(new LineBorder(Color.LIGHT_GRAY));
@@ -202,6 +211,7 @@ public class GroupPanel extends JPanel {
         productPanel.add(button);
         return productPanel;
     }
+
     private JPanel oneProductPanel(Product product) {
         JPanel oneProductPanel = new JPanel(new BorderLayout());
         oneProductPanel.setBorder(new LineBorder(Color.WHITE));
@@ -211,6 +221,7 @@ public class GroupPanel extends JPanel {
                 BorderLayout.CENTER);
         return oneProductPanel;
     }
+
     private JPanel southPanel() {
         JPanel southPanel = new JPanel(new GridLayout(1, 0));
         southPanel.setBackground(new Color(198, 233, 243));
@@ -221,6 +232,7 @@ public class GroupPanel extends JPanel {
         southPanel.add(deleteCategoryButton());
         return southPanel;
     }
+
     private JButton getBackButton() {
         JButton returnBack = new JButton("Назад");
         returnBack.setPreferredSize(new Dimension(120, 25));
@@ -235,8 +247,9 @@ public class GroupPanel extends JPanel {
         });
         return returnBack;
     }
+
     private JButton createFileButton() {
-        JButton saveData = new JButton("Зберегти");
+        JButton saveData = new JButton("Оновити");
         saveData.setPreferredSize(new Dimension(120, 25));
         saveData.setBackground(new Color(128, 118, 146));
         saveData.setForeground(new Color(255, 253, 253));
@@ -250,6 +263,7 @@ public class GroupPanel extends JPanel {
         });
         return saveData;
     }
+
     private JButton addProductButton() {
         JButton addProduct = new JButton("Додати"); //Переносить на сторінку "Додати продукт"
         addProduct.setPreferredSize(new Dimension(120, 25));
@@ -265,6 +279,7 @@ public class GroupPanel extends JPanel {
         });
         return addProduct;
     }
+
     private JButton deleteCategoryButton() {
         JButton deleteCategory = new JButton("Видалити");
         deleteCategory.setPreferredSize(new Dimension(120, 25));
@@ -300,7 +315,7 @@ public class GroupPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                   //     programWindow.getStore().deleteGroup(group.getName());
+                        //     programWindow.getStore().deleteGroup(group.getName());
                         programWindow.openStoreWindow();
                         ad1.setVisible(false);
                     }
@@ -324,6 +339,7 @@ public class GroupPanel extends JPanel {
     private JTextArea numberArea;
     private JTextArea brandArea;
     private JTextArea descriptionArea;
+
     private JPanel addProductPanel() {
         repaint();
         revalidate();
@@ -335,12 +351,14 @@ public class GroupPanel extends JPanel {
                 BorderLayout.CENTER);
         return addProductPanel;
     }
+
     private JPanel northProductPanel() {
         JPanel northProductPanel = new JPanel(new GridLayout(3, 1));
         northProductPanel.setBackground(new Color(198, 233, 243));
         northProductPanel.add(titleProdPanel());
         return northProductPanel;
     }
+
     private JPanel titleProdPanel() {
         JPanel titlePanel = new JPanel(new
                 FlowLayout(FlowLayout.CENTER));
@@ -351,12 +369,14 @@ public class GroupPanel extends JPanel {
         titlePanel.add(title);
         return titlePanel;
     }
+
     private JPanel centerProductPanel() {
         JPanel centrePanel = new JPanel();
         centrePanel.setBackground(new Color(198, 233, 243));
         centrePanel.add(infoPanel());
         return centrePanel;
     }
+
     private JPanel infoPanel() {
         JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(700, 350));
@@ -370,6 +390,7 @@ public class GroupPanel extends JPanel {
         infoPanel.add(descriptionPanel(), BorderLayout.CENTER);
         return infoPanel;
     }
+
     private JPanel namePanel() {
         JPanel namePanel = new JPanel(new GridLayout(1, 0));
         namePanel.setBackground(new Color(236, 234, 232));
@@ -385,6 +406,7 @@ public class GroupPanel extends JPanel {
         namePanel.add(nameArea);
         return namePanel;
     }
+
     private JPanel pricePanel() {
         JPanel pricePanel = new JPanel(new GridLayout(1, 0));
         pricePanel.setBackground(new Color(236, 234, 232));
@@ -400,6 +422,7 @@ public class GroupPanel extends JPanel {
         pricePanel.add(priceArea);
         return pricePanel;
     }
+
     private JPanel numberPanel() {
         JPanel numberPanel = new JPanel(new GridLayout(1, 0));
         numberPanel.setBackground(new Color(236, 234, 232));
@@ -415,6 +438,7 @@ public class GroupPanel extends JPanel {
         numberPanel.add(numberArea);
         return numberPanel;
     }
+
     private JPanel brandPanel() {
         JPanel brandPanel = new JPanel(new GridLayout(1, 0));
         brandPanel.setBackground(new Color(236, 234, 232));
@@ -430,6 +454,7 @@ public class GroupPanel extends JPanel {
         brandPanel.add(brandArea);
         return brandPanel;
     }
+
     private JPanel descriptionPanel() {
         JPanel descriptionPanel = new JPanel(new BorderLayout());
         descriptionPanel.setBackground(new Color(236, 234, 232));
@@ -451,11 +476,13 @@ public class GroupPanel extends JPanel {
         descriptionPanel.add(descriptionArea, BorderLayout.CENTER);
         return descriptionPanel;
     }
+
     private JPanel falsePanel() {
         JPanel falsePanel = new JPanel(new GridLayout(0, 1));
         falsePanel.setBackground(new Color(198, 233, 243));
         return falsePanel;
     }
+
     private JPanel southProductPanel() {
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 0));
         buttonsPanel.setBackground(new Color(198, 233, 243));
@@ -483,7 +510,7 @@ public class GroupPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-           //     addProduct();
+                //     addProduct();
                 programWindow.remove(GroupPanel.this);
                 programWindow.openGroupWindow(group);
             }
@@ -493,7 +520,7 @@ public class GroupPanel extends JPanel {
         return buttonsPanel;
     }
 
-//    private void addProduct() throws NumberFormatException {
+    //    private void addProduct() throws NumberFormatException {
 //        ArrayList<String> unicProdNames = programWindow.getStore().getProductNames();
 //        System.out.println(unicProdNames);
 //        try {
@@ -515,7 +542,7 @@ public class GroupPanel extends JPanel {
 //            throwables.printStackTrace();
 //        }
 //    }
-    private void showIllegalFormat(){
+    private void showIllegalFormat() {
         JFrame errorMessage = new JFrame();
         errorMessage.setSize(500, 150);
         errorMessage.setLocationRelativeTo(null);
@@ -543,6 +570,7 @@ public class GroupPanel extends JPanel {
             }
         });
     }
+
     private void showUnicNameError() {
         JFrame errorMessage = new JFrame();
         errorMessage.setSize(500, 150);
@@ -554,7 +582,7 @@ public class GroupPanel extends JPanel {
         northPanel1.setBackground(new Color(250, 250, 250));
         southPanel1.setBackground(new Color(236, 234, 232));
         JLabel label = new JLabel("Товар з такою назвою вже створений.");
-                label.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+        label.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
         JButton yes = new JButton("Ок");
         yes.setBackground(new Color(128, 118, 146));
         yes.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
