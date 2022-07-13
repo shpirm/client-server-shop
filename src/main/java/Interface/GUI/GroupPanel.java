@@ -2,12 +2,16 @@ package Interface.GUI;
 
 import Interface.Program.Group;
 import Interface.Program.Product;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -62,7 +66,12 @@ public class GroupPanel extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openSearchWindow(searchText.getText());
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
+                            new JSONObject().put("searchText", searchText.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         searchPanel.add(searchText);

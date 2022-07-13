@@ -2,6 +2,7 @@ package Structure.Client;
 
 import Interface.GUI.ConnectionsPanel;
 import Interface.GUI.CurrentPanel;
+import Interface.GUI.SearchPanel;
 import Interface.GUI.StorePanel;
 import Interface.Program.Group;
 import Interface.Program.Product;
@@ -220,7 +221,23 @@ public class ClientProcessor extends Thread {
                         panel.getProgramWindow().getStore().getGroup(groupName));
             }
             case PRODUCT_FIND_LIST ->{
+                StorePanel panel = (StorePanel) CurrentPanel.getInstance().getPanel();
+                panel.getProgramWindow().openSearchWindow();
+                panel.getProgramWindow().getStore().searchedProducts = new ArrayList<>();
 
+                JSONArray array = jsonObject.getJSONArray("products");
+                for (int i = 0; i < array.length(); i++) {
+                    jsonObject = array.getJSONObject(i);
+                    panel.getProgramWindow().getStore().findProducts().add(new Product(
+                            String.valueOf(jsonObject.get("name")),
+                            jsonObject.getInt("amount"),
+                            jsonObject.getDouble("price"),
+                            String.valueOf(jsonObject.get("brand")),
+                            String.valueOf(jsonObject.get("description"))
+                    ));
+                }
+                panel.getProgramWindow().remove(panel.getProgramWindow().getSearchPanel());
+                panel.getProgramWindow().openSearchWindow();
             }
         }
     }

@@ -52,7 +52,7 @@ public class ProgramWindow extends JFrame {
         add(connectionsPanel);
     }
 
-    public void openSearchWindow(String searchText) {
+    public void openSearchWindow() {
         currentProduct = null;
         currentGroup = null;
         if (storePanel != null) {
@@ -64,7 +64,7 @@ public class ProgramWindow extends JFrame {
         if (groupPanel != null) {
             remove(groupPanel);
         }
-        searchPanel = new SearchPanel(store, this, searchText);
+        searchPanel = new SearchPanel(store, this);
         add(searchPanel);
         revalidate();
     }
