@@ -88,61 +88,61 @@ public class ServerProcessor extends Thread {
         JSONObject objAnswer = new JSONObject();
         byte[] packetAnswer = new byte[0];
 
-            switch (command) {
-                case CONNECT_REQUEST -> {
-                    if (equalPassword(String.valueOf(jsonObject.get("server password")))) {
-                        String str = "Connect gained!";
-                        objAnswer.put("answer", str);
+        switch (command) {
+            case CONNECT_REQUEST -> {
+                if (equalPassword(String.valueOf(jsonObject.get("server password")))) {
+                    String str = "Connect gained!";
+                    objAnswer.put("answer", str);
 
-                        objAnswer.put("login", String.valueOf(jsonObject.get("login")));
-                        objAnswer.put("host", String.valueOf(jsonObject.get("host")));
-                        objAnswer.put("port", jsonObject.getInt("port"));
+                    objAnswer.put("login", String.valueOf(jsonObject.get("login")));
+                    objAnswer.put("host", String.valueOf(jsonObject.get("host")));
+                    objAnswer.put("port", jsonObject.getInt("port"));
 
-                        synchronized (loginDatabase) {
-                            try {
-                                loginDatabase.insertUser(
-                                        String.valueOf(jsonObject.get("login")),
-                                        String.valueOf(jsonObject.get("password")),
-                                        String.valueOf(jsonObject.get("host")),
-                                        jsonObject.getInt("port")
-                                );
-                            } catch (SQLException e) {
-                                System.out.println(e);
-                            }
-                        }
-
-                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_SUCCESS,
-                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-
-                    } else {
-                        String str = "Connect rejected!";
-                        objAnswer.put("answer", str);
-
-                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_ERROR,
-                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-
-                       // ServerTCP.getInstance(3333, "123").stopConnection(packet.getBMsg().getBUserId());
-                    }
-                }
-                case ACCESS_REQUEST -> {
-                    String login = String.valueOf(jsonObject.get("login"));
-                    String password = String.valueOf(jsonObject.get("password"));
                     synchronized (loginDatabase) {
-                        if (Objects.equals(password, loginDatabase.getPassword(login))) {
-                            String str = "Access gained!";
-                            objAnswer.put("answer", str);
-
-                            packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_SUCCESS,
-                                    objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-                        } else {
-                            String str = "Access rejected!";
-                            objAnswer.put("answer", str);
-
-                            packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_ERROR,
-                                    objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        try {
+                            loginDatabase.insertUser(
+                                    String.valueOf(jsonObject.get("login")),
+                                    String.valueOf(jsonObject.get("password")),
+                                    String.valueOf(jsonObject.get("host")),
+                                    jsonObject.getInt("port")
+                            );
+                        } catch (SQLException e) {
+                            System.out.println(e);
                         }
                     }
+
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_SUCCESS,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+
+                } else {
+                    String str = "Connect rejected!";
+                    objAnswer.put("answer", str);
+
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_ERROR,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+
+                    // ServerTCP.getInstance(3333, "123").stopConnection(packet.getBMsg().getBUserId());
                 }
+            }
+            case ACCESS_REQUEST -> {
+                String login = String.valueOf(jsonObject.get("login"));
+                String password = String.valueOf(jsonObject.get("password"));
+                synchronized (loginDatabase) {
+                    if (Objects.equals(password, loginDatabase.getPassword(login))) {
+                        String str = "Access gained!";
+                        objAnswer.put("answer", str);
+
+                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_SUCCESS,
+                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                    } else {
+                        String str = "Access rejected!";
+                        objAnswer.put("answer", str);
+
+                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_ERROR,
+                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                    }
+                }
+            }
 //                case USER_LIST -> {
 //                    JSONArray arr = new JSONArray();
 //                    ArrayList<Connections> array = new ArrayList<>();
@@ -167,66 +167,90 @@ public class ServerProcessor extends Thread {
 //                            connection.toString().getBytes(StandardCharsets.UTF_8)));
 //                    sender.sendMessage(packet.getBMsg().getBUserId(), packetAnswer);
 //                }
-                case GROUP_INSERT -> {
-                    String name = String.valueOf(jsonObject.get("name"));
-                    String description = String.valueOf(jsonObject.get("description"));
-                    synchronized (shopDatabase) {
-                        shopDatabase.insertGroup(name, description);
-                    }
-
-                    objAnswer.put("name", name);
-                    objAnswer.put("description", description);
-                    objAnswer.put("answer", "Group " + name + " added!");
-                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_GROUP_SUCCESS,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+            case GROUP_INSERT -> {
+                String name = String.valueOf(jsonObject.get("name"));
+                String description = String.valueOf(jsonObject.get("description"));
+                synchronized (shopDatabase) {
+                    shopDatabase.insertGroup(name, description);
                 }
-                case GROUP_LIST -> {
-                    JSONArray arr = new JSONArray();
-                    ArrayList<Group> array = new ArrayList<>();
 
-                    synchronized (shopDatabase) {
-                        array = shopDatabase.getGroupList();
-                    }
-
-                    for (Group group : array) {
-                        JSONObject userObj = new JSONObject();
-                        userObj.put("name", group.getName());
-                        userObj.put("description", group.getDescription());
-                        arr.put(userObj);
-                    }
-                    
-                    objAnswer.put("groups", arr);
-
-                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_LIST,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-                }
-                case GROUP_PRODUCT_LIST -> {
-                    try {
-                        JSONArray arr = new JSONArray();
-                        ArrayList<Product> array = new ArrayList<>();
-
-                        synchronized (shopDatabase) {
-                            array = shopDatabase.getAllProductsInGroup(String.valueOf(jsonObject.get("group name")));
-                        }
-
-                        for (Product product : array) {
-                            JSONObject userObj = new JSONObject();
-                            userObj.put("name", product.getName());
-                            userObj.put("amount", product.getNumber());
-                            userObj.put("price", product.getPrice());
-                            userObj.put("brand", product.getBrand());
-                            userObj.put("description", product.getDescription());
-                            arr.put(userObj);
-                        }
-                        
-                        objAnswer.put("products", arr);
-                        objAnswer.put("group", String.valueOf(jsonObject.get("group name")));
-
-                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_PRODUCT_LIST,
-                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-                    } catch (SQLException e) { System.out.println(e); }
-                }
+                objAnswer.put("name", name);
+                objAnswer.put("description", description);
+                objAnswer.put("answer", "Group " + name + " added!");
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_GROUP_SUCCESS,
+                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
             }
+            case GROUP_LIST -> {
+                JSONArray arr = new JSONArray();
+                ArrayList<Group> array = new ArrayList<>();
+
+                synchronized (shopDatabase) {
+                    array = shopDatabase.getGroupList();
+                }
+
+                for (Group group : array) {
+                    JSONObject userObj = new JSONObject();
+                    userObj.put("name", group.getName());
+                    userObj.put("description", group.getDescription());
+                    arr.put(userObj);
+                }
+
+                objAnswer.put("groups", arr);
+
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_LIST,
+                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+            case GROUP_PRODUCT_LIST -> {
+                JSONArray arr = new JSONArray();
+                ArrayList<Product> array = new ArrayList<>();
+
+                synchronized (shopDatabase) {
+                    array = shopDatabase.getAllProductsInGroup(String.valueOf(jsonObject.get("group name")));
+                }
+
+                for (Product product : array) {
+                    JSONObject userObj = new JSONObject();
+                    userObj.put("name", product.getName());
+                    userObj.put("amount", product.getNumber());
+                    userObj.put("price", product.getPrice());
+                    userObj.put("brand", product.getBrand());
+                    userObj.put("description", product.getDescription());
+                    arr.put(userObj);
+                }
+
+                objAnswer.put("products", arr);
+                objAnswer.put("group", String.valueOf(jsonObject.get("group name")));
+
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_PRODUCT_LIST,
+                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+            case PRODUCT_INSERT -> {
+                synchronized (shopDatabase) {
+                    shopDatabase.insertProduct(
+                            String.valueOf(jsonObject.get("name")),
+                            jsonObject.getInt("amount"),
+                            jsonObject.getDouble("price"),
+                            String.valueOf(jsonObject.get("group")),
+                            String.valueOf(jsonObject.get("brand")),
+                            String.valueOf(jsonObject.get("description")));
+                }
+
+                String name = String.valueOf(jsonObject.get("name"));
+                jsonObject.put("answer", "Product " + name + " added!");
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_PRODUCT_SUCCESS,
+                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+            case GROUP_DELETE -> {
+                String name = String.valueOf(jsonObject.get("group name"));
+                synchronized (shopDatabase) {
+                    shopDatabase.deleteGroup(name);
+                }
+
+                jsonObject.put("answer", "Group " + name + " deleted!");
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.DELETE_GROUP,
+                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+        }
 
 //                case PRODUCT_INSERT -> {
 //                    synchronized (db) {

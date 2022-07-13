@@ -2,17 +2,25 @@ package Interface.GUI;
 
 import Interface.Program.Group;
 import Interface.Program.Product;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class GroupPanel extends JPanel {
     private Group group;
+
+    public ProgramWindow getProgramWindow() {
+        return programWindow;
+    }
+
     private ProgramWindow programWindow;
 
     GroupPanel(Group group, ProgramWindow programWindow) {
@@ -227,7 +235,7 @@ public class GroupPanel extends JPanel {
         southPanel.setBackground(new Color(198, 233, 243));
         southPanel.setPreferredSize(new Dimension(1200, 30));
         southPanel.add(getBackButton());
-        southPanel.add(createFileButton());
+        southPanel.add(updateButton());
         southPanel.add(addProductButton());
         southPanel.add(deleteCategoryButton());
         return southPanel;
@@ -242,13 +250,16 @@ public class GroupPanel extends JPanel {
         returnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openStoreWindow();
+                removeAll();
+                CurrentPanel.getInstance().setPanel(getProgramWindow().getStorePanel());
+                getProgramWindow().openStoreWindow();
+                revalidate();
             }
         });
         return returnBack;
     }
 
-    private JButton createFileButton() {
+    private JButton updateButton() {
         JButton saveData = new JButton("Оновити");
         saveData.setPreferredSize(new Dimension(120, 25));
         saveData.setBackground(new Color(128, 118, 146));
@@ -257,8 +268,12 @@ public class GroupPanel extends JPanel {
         saveData.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //створює файл з товарами цієї групи
-                programWindow.createGroupFile(group);
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_PRODUCT_LIST,
+                            new JSONObject().put("group name", group.getName()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         return saveData;
@@ -314,10 +329,14 @@ public class GroupPanel extends JPanel {
                 yes.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
-                        //     programWindow.getStore().deleteGroup(group.getName());
-                        programWindow.openStoreWindow();
+                        removeAll();
                         ad1.setVisible(false);
+                        try {
+                            User.getInstance().getConnection().sendMessage(UserCommand.GROUP_DELETE,
+                                    new JSONObject().put("group name", group.getName()));
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 });
                 no.setBackground(new Color(128, 118, 146));
@@ -494,13 +513,8 @@ public class GroupPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeAll();
-                if (programWindow.getSearchPanel() != null) {
-                    programWindow.openStoreWindow();
-                }
-                if (programWindow.getCurrentGroup() != null) {
-
-                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
-                }
+                getProgramWindow().openGroupWindow(group);
+                revalidate();
             }
         });
         JButton saveButton = new JButton("Зберегти");
@@ -510,9 +524,20 @@ public class GroupPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //     addProduct();
-                programWindow.remove(GroupPanel.this);
-                programWindow.openGroupWindow(group);
+
+                try {
+                    removeAll();
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_INSERT,
+                            new JSONObject().put("group", group.getName())
+                                    .put("name", nameArea.getText())
+                                    .put("amount", numberArea.getText())
+                                    .put("price", priceArea.getText())
+                                    .put("brand", brandArea.getText())
+                                    .put("description", descriptionArea.getText())
+                    );
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         buttonsPanel.add(getBackButton);

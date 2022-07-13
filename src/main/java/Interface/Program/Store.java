@@ -44,10 +44,8 @@ public class Store {
 //        return false;
 //    }
     public Group getGroup(String name) {
-        System.out.println(groups);
         for (Group group : groups) {
             if (Objects.equals(group.getName(), name)) return group;
-            System.out.println(group);
         }
         return null;
     }

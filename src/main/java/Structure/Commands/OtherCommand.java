@@ -11,6 +11,10 @@ public enum OtherCommand {
     GROUP_PRODUCT_LIST,
 
     INSERT_GROUP_SUCCESS,
+    DELETE_GROUP,
+
+    INSERT_PRODUCT_SUCCESS,
+
 
     USER_LIST,
 

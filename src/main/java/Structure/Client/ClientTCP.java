@@ -67,7 +67,6 @@ public class ClientTCP extends Thread {
     }
 
     public void sendMessage(UserCommand command, JSONObject object) throws IOException {
-        System.out.println(Arrays.toString(getPacket(command, object, clientUserId, packetID++)));
         queueOfPackets.add(getPacket(command, object, clientUserId, packetID++));
     }
 

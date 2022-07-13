@@ -128,6 +128,9 @@ public class StorePanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeAll();
+                getProgramWindow().openGroupWindow(group);
+                CurrentPanel.getInstance().setPanel(getProgramWindow().getGroupPanel());
                 try {
                     User.getInstance().getConnection().sendMessage(UserCommand.GROUP_PRODUCT_LIST,
                             new JSONObject().put("group name", group.getName()));
@@ -192,8 +195,9 @@ public class StorePanel extends JPanel {
         addCat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeAll();
                 try {
-                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put("text", "text"));
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put(" ", " "));
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -312,6 +316,7 @@ public class StorePanel extends JPanel {
         saveCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeAll();
                 try {
                     User.getInstance().getConnection().sendMessage(UserCommand.GROUP_INSERT,
                             new JSONObject().put("name", newCategory.getText())

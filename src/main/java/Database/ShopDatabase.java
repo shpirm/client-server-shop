@@ -278,15 +278,11 @@ public class ShopDatabase {
         return list;
     }
     public ArrayList<Product> getAllProductsInGroup(String groupName) throws SQLException {
-        PreparedStatement statement = con.prepareStatement(
-                "SELECT * FROM ProductGroup WHERE GroupName = ?");
-        statement.setString(1, groupName);
-        ResultSet resGroup = statement.executeQuery();
-        int groupID = resGroup.getInt("GroupID");
+
         ArrayList<Product> list = new ArrayList<>();
-        statement = con.prepareStatement(
-                "SELECT * FROM Product WHERE GroupID = ?");
-        statement.setInt(1, groupID);
+        PreparedStatement statement = con.prepareStatement(
+                "SELECT * FROM Product WHERE GroupID IN (SELECT GroupID FROM ProductGroup WHERE GroupName = ?)");
+        statement.setString(1, groupName);
         ResultSet res = statement.executeQuery();
 
         while (res.next()) {
@@ -297,9 +293,10 @@ public class ShopDatabase {
                     res.getString("Brand"),
                     res.getString("Description")
             ));
-            res.close();
-            statement.close();
         }
+        res.close();
+        statement.close();
+
         return list;
     }
 

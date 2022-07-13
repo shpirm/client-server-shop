@@ -72,6 +72,7 @@ public class ProgramWindow extends JFrame {
     public void openStoreWindow() {
         currentProduct = null;
         currentGroup = null;
+
         if (groupPanel != null) {
             remove(groupPanel);
         }
@@ -84,6 +85,7 @@ public class ProgramWindow extends JFrame {
         if (connectionsPanel != null) {
             remove(connectionsPanel);
         }
+
         storePanel = new StorePanel(store, this);
         add(storePanel);
         revalidate();
@@ -91,6 +93,7 @@ public class ProgramWindow extends JFrame {
 
     public void openGroupWindow(Group group) {
         currentGroup = group;
+
         if (storePanel != null) {
             remove(storePanel);
         }

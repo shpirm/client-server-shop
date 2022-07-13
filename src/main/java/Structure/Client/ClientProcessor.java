@@ -2,6 +2,7 @@ package Structure.Client;
 
 import Interface.GUI.ConnectionsPanel;
 import Interface.GUI.CurrentPanel;
+import Interface.GUI.GroupPanel;
 import Interface.GUI.StorePanel;
 import Interface.Program.Group;
 import Interface.Program.Product;
@@ -131,7 +132,7 @@ public class ClientProcessor extends Thread {
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getStorePanel());
 
                 User.getInstance().setConnection(ClientTCP.clientMapID.get(packet.getBMsg().getBUserId()));
-                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put("text","text"));
+                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put(" "," "));
             }
             case ACCESS_ERROR -> {
                 ConnectionsPanel panel = (ConnectionsPanel) CurrentPanel.getInstance().getPanel();
@@ -179,7 +180,7 @@ public class ClientProcessor extends Thread {
 
                 window.setVisible(true);
 
-                panel.getProgramWindow().remove(panel.getProgramWindow().getStorePanel());
+                panel.removeAll();
                 panel.getProgramWindow().openStoreWindow();
             }
             case GROUP_LIST -> {
@@ -196,11 +197,12 @@ public class ClientProcessor extends Thread {
                     ));
                 }
 
-                panel.getProgramWindow().remove(panel.getProgramWindow().getStorePanel());
+                panel.removeAll();
                 panel.getProgramWindow().openStoreWindow();
             }
+
             case GROUP_PRODUCT_LIST -> {
-                StorePanel panel = (StorePanel) CurrentPanel.getInstance().getPanel();
+                GroupPanel panel = (GroupPanel) CurrentPanel.getInstance().getPanel();
                 String groupName = String.valueOf(jsonObject.get("group"));
                 panel.getProgramWindow().getStore().getGroup(groupName).getProducts().clear();
 
@@ -218,6 +220,49 @@ public class ClientProcessor extends Thread {
 
                 panel.getProgramWindow().openGroupWindow(
                         panel.getProgramWindow().getStore().getGroup(groupName));
+                CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getGroupPanel());
+            }
+            case INSERT_PRODUCT_SUCCESS -> {
+                GroupPanel panel = (GroupPanel) CurrentPanel.getInstance().getPanel();
+                Product product = new Product (
+                        String.valueOf(jsonObject.get("name")),
+                        jsonObject.getInt("amount"),
+                        jsonObject.getDouble("price"),
+                        String.valueOf(jsonObject.get("brand")),
+                        String.valueOf(jsonObject.get("description")));
+
+                panel.getProgramWindow().getStore().getGroup(String.valueOf(jsonObject.get("group")))
+                        .getProducts().add(product);
+
+                JFrame window = new JFrame();
+                window.setSize(500, 80);
+                window.setLocationRelativeTo(null);
+                JPanel info = new JPanel(new GridLayout(1, 1));
+                info.setBackground(new Color(198, 233, 243));
+
+                JPanel forTitle = new JPanel(new FlowLayout());
+
+                JLabel label = new JLabel(String.valueOf(jsonObject.get("answer")));
+                label.setFont(new Font(Font.SERIF, Font.PLAIN, 25));
+                forTitle.add(label);
+
+                info.add(forTitle);
+                window.add(info);
+
+                window.setVisible(true);
+
+                panel.removeAll();
+
+                panel.getProgramWindow().openGroupWindow(
+                        panel.getProgramWindow().getStore().getGroup(
+                                String.valueOf(jsonObject.get("group"))));
+            }
+            case DELETE_GROUP -> {
+                GroupPanel panel = (GroupPanel) CurrentPanel.getInstance().getPanel();
+                panel.removeAll();
+
+                CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getStorePanel());
+                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put(" "," "));
             }
         }
     }
