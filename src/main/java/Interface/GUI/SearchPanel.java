@@ -90,18 +90,18 @@ public class SearchPanel extends JPanel {
         panel.setBackground(Color.WHITE);
         panel.add(header(), BorderLayout.NORTH);
         JPanel prodPanel = new JPanel(new GridLayout(0, 1));
-        ArrayList<Product> results = store.findProducts(searchText);
-        if (results != null) {
-            for (int i = 0; i < results.size(); i++) {
-                prodPanel.add(oneProductPanel(results.get(i)));
-            }
-        }
-        if (results.size()<9){
-            for (int n = 0; n< 9 - results.size(); n++){
-                prodPanel.add(falseProductPanel());
-            }
-        }
-        panel.add(prodPanel, BorderLayout.CENTER);
+//        ArrayList<Product> results = store.findProducts(searchText);
+//        if (results != null) {
+//            for (int i = 0; i < results.size(); i++) {
+//                prodPanel.add(oneProductPanel(results.get(i)));
+//            }
+//        }
+//        if (results.size()<9){
+//            for (int n = 0; n< 9 - results.size(); n++){
+//                prodPanel.add(falseProductPanel());
+//            }
+//        }
+//        panel.add(prodPanel, BorderLayout.CENTER);
         JScrollPane scroll = new JScrollPane(panel);
         scroll.setBackground(new Color(198, 233, 243));
         scroll.setPreferredSize(new Dimension(700, 400));

@@ -1,12 +1,12 @@
 package Interface.Program;
 public class Product {
+    private int productID;
     private String name;
     private String description;
     private String brand;
-    private boolean deleted = false;
     private double price;
     private int number;
-    private static int numberAll = 0;
+    private int groupID;
 
     /**
      * Стандартний конструктор для створення об'єкта Product
@@ -17,14 +17,16 @@ public class Product {
      * @param brand       виробник товару
      * @param description опис товару
      */
-    public Product(String name, double price, int number, String brand,
+    public Product(int productID, String name, int number, double price, int groupID, String brand,
                    String description) {
+        this.productID = productID;
         this.name = name;
         this.price = price;
         this.number = number;
+        this.groupID = groupID;
         this.brand = brand;
         this.description = description;
-        numberAll++;
+
     }
 
     /**
@@ -70,6 +72,10 @@ public class Product {
                 " Опис: " + description;
     }
 
+    public int getProductID() { return productID; }
+
+    public void setProductID(int productID) { this.productID = productID; }
+
     public String getName() {
         return name;
     }
@@ -90,10 +96,6 @@ public class Product {
         return number;
     }
 
-    public static int getNumberAll() {
-        return numberAll;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -106,7 +108,7 @@ public class Product {
         this.brand = brand;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -114,11 +116,11 @@ public class Product {
         this.number = number;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public int getGroupID() {
+        return groupID;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public void setGroupID(int groupID) {
+        this.groupID = groupID;
     }
 }

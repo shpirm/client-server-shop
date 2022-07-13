@@ -19,6 +19,7 @@ import static Structure.Commands.UserCommand.CONNECT_REQUEST;
 public class ClientTCP extends Thread {
 
     public static Map<String, ClientTCP> clientMap = new HashMap<>();
+    public static Map<Integer, ClientTCP> clientMapID = new HashMap<>();
     private static int userID = 0;
     private static int packetID = 0;
 
@@ -52,6 +53,7 @@ public class ClientTCP extends Thread {
         sendMessage(CONNECT_REQUEST, object);
 
         clientMap.put(login, this);
+        clientMapID.put(clientUserId, this);
     }
 
     public void run() {
@@ -71,7 +73,7 @@ public class ClientTCP extends Thread {
 
     public void stopConnection() {
         shutdown = true;
-        clientMap.remove(clientUserId);
+        clientMapID.remove(clientUserId);
     }
 
     private static byte[] getPacket(UserCommand command, JSONObject object, int userID, int packetID) throws UnsupportedEncodingException {

@@ -8,7 +8,9 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
 public class GroupPanel extends JPanel {
     private Group group;
     private ProgramWindow programWindow;
@@ -75,33 +77,38 @@ public class GroupPanel extends JPanel {
         JPanel centrePanel = new JPanel(new
                 FlowLayout(FlowLayout.CENTER));
         centrePanel.setBackground(new Color(198, 233, 243));
-        centrePanel.add(scrollProductsPanel());
+    //    centrePanel.add(scrollProductsPanel());
         return centrePanel;
     }
-    private JScrollPane scrollProductsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(198, 233, 243));
-        panel.setBackground(Color.WHITE);
-        panel.add(header(), BorderLayout.NORTH);
-        JPanel prodPanel = new JPanel(new GridLayout(0, 1));
-        if (group.getProducts() != null) {
-            for (int i = 0; i < group.getProducts().size(); i++) {
-
-                prodPanel.add(oneProductPanel(group.getProducts().get(i)));
-            }
-            if (group.getProducts().size() < 9) {
-                for (int n = 0; n < 9 - group.getProducts().size();
-                     n++) {
-                    prodPanel.add(falseProductPanel());
-                }
-            }
-        }
-        panel.add(prodPanel, BorderLayout.CENTER);
-        JScrollPane scroll = new JScrollPane(panel);
-        scroll.setBackground(new Color(198, 233, 243));
-        scroll.setPreferredSize(new Dimension(700, 400));
-        return scroll;
-    }
+//    private JScrollPane scrollProductsPanel() {
+//        JPanel panel = new JPanel(new BorderLayout());
+//        panel.setBackground(new Color(198, 233, 243));
+//        panel.setBackground(Color.WHITE);
+//        panel.add(header(), BorderLayout.NORTH);
+//        JPanel prodPanel = new JPanel(new GridLayout(0, 1));
+//        try {
+//            ArrayList<Product> productList = new Connector().getAllProductsInGroup(group.getName());
+//            if (productList != null) {
+//                for (int i = 0; i < productList.size(); i++) {
+//
+//                    prodPanel.add(oneProductPanel(productList.get(i)));
+//                }
+//                if (productList.size() < 9) {
+//                    for (int n = 0; n < 9 - productList.size();
+//                         n++) {
+//                        prodPanel.add(falseProductPanel());
+//                    }
+//                }
+//            }
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//        panel.add(prodPanel, BorderLayout.CENTER);
+//        JScrollPane scroll = new JScrollPane(panel);
+//        scroll.setBackground(new Color(198, 233, 243));
+//        scroll.setPreferredSize(new Dimension(700, 400));
+//        return scroll;
+//    }
     private JPanel falseProductPanel() {
         JPanel oneProductPanel = new JPanel(new BorderLayout());
 // oneProductPanel.setToolTipText(product.getDescription());
@@ -293,7 +300,7 @@ public class GroupPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                        programWindow.getStore().deleteGroup(group.getName());
+                   //     programWindow.getStore().deleteGroup(group.getName());
                         programWindow.openStoreWindow();
                         ad1.setVisible(false);
                     }
@@ -476,7 +483,7 @@ public class GroupPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addProduct();
+           //     addProduct();
                 programWindow.remove(GroupPanel.this);
                 programWindow.openGroupWindow(group);
             }
@@ -486,30 +493,29 @@ public class GroupPanel extends JPanel {
         return buttonsPanel;
     }
 
-    private void addProduct() throws NumberFormatException {
-        ArrayList<String> unicProdNames = programWindow.getStore().getProductNames();
-        System.out.println(unicProdNames);
-        try {
-            if
-            (!unicProdNames.contains(nameArea.getText().toLowerCase())) {
-                unicProdNames.add(nameArea.getText().toLowerCase());
-                String name = nameArea.getText();
-                int price = Integer.valueOf(priceArea.getText());
-                int number = Integer.valueOf(numberArea.getText());
-                String brand = brandArea.getText();
-                String description = descriptionArea.getText();
-                Product newProduct = new Product(name, price, number,
-                        brand, description);
-
-                programWindow.getCurrentGroup().addProduct(newProduct);
-            } else {
-                showUnicNameError();
-            }
-        } catch (NumberFormatException exception) {
-            showIllegalFormat();
-        }
-    }
-    public void showIllegalFormat(){
+//    private void addProduct() throws NumberFormatException {
+//        ArrayList<String> unicProdNames = programWindow.getStore().getProductNames();
+//        System.out.println(unicProdNames);
+//        try {
+//            if
+//            (!unicProdNames.contains(nameArea.getText().toLowerCase())) {
+//                unicProdNames.add(nameArea.getText().toLowerCase());
+//                String name = nameArea.getText();
+//                int price = Integer.valueOf(priceArea.getText());
+//                int number = Integer.valueOf(numberArea.getText());
+//                String brand = brandArea.getText();
+//                String description = descriptionArea.getText();
+//                new Connector().insertProduct(name, number, price,programWindow.getCurrentGroup().getName(), brand, description);
+//            } else {
+//                showUnicNameError();
+//            }
+//        } catch (NumberFormatException exception) {
+//            showIllegalFormat();
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//    }
+    private void showIllegalFormat(){
         JFrame errorMessage = new JFrame();
         errorMessage.setSize(500, 150);
         errorMessage.setLocationRelativeTo(null);

@@ -1,4 +1,5 @@
 package Interface.GUI;
+
 import Interface.Program.Product;
 
 import javax.swing.*;
@@ -15,24 +16,28 @@ public class ProductPanel extends JPanel {
     private JTextArea numberArea;
     private JTextArea brandArea;
     private JTextArea descriptionArea;
+
     ProductPanel(Product product, ProgramWindow programWindow) {
         this.product = product;
         this.programWindow = programWindow;
         this.setLayout(new BorderLayout());
         init();
     }
+
     private void init() {
         setBackground(new Color(198, 233, 243));
         add(northPanel(), BorderLayout.NORTH);
         add(centerPanel(), BorderLayout.CENTER);
         add(southPanel(), BorderLayout.SOUTH);
     }
+
     private JPanel northPanel() {
         JPanel northPanel = new JPanel(new GridLayout(3, 1));
         northPanel.setBackground(new Color(198, 233, 243));
         northPanel.add(titlePanel());
         return northPanel;
     }
+
     private JPanel titlePanel() {
         JPanel titlePanel = new JPanel(new
                 FlowLayout(FlowLayout.CENTER));
@@ -43,12 +48,14 @@ public class ProductPanel extends JPanel {
         titlePanel.add(title);
         return titlePanel;
     }
+
     private JPanel centerPanel() {
         JPanel centrePanel = new JPanel();
         centrePanel.setBackground(new Color(198, 233, 243));
         centrePanel.add(infoPanel());
         return centrePanel;
     }
+
     private JPanel infoPanel() {
         JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.setPreferredSize(new Dimension(700, 350));
@@ -63,6 +70,7 @@ public class ProductPanel extends JPanel {
         infoPanel.add(savePanel(), BorderLayout.SOUTH);
         return infoPanel;
     }
+
     private JPanel namePanel() {
         JPanel namePanel = new JPanel(new GridLayout(1, 0));
         namePanel.setBackground(new Color(236, 234, 232));
@@ -79,6 +87,7 @@ public class ProductPanel extends JPanel {
         namePanel.add(nameArea);
         return namePanel;
     }
+
     private JPanel pricePanel() {
         JPanel pricePanel = new JPanel(new GridLayout(1, 0));
         pricePanel.setBackground(new Color(236, 234, 232));
@@ -95,6 +104,7 @@ public class ProductPanel extends JPanel {
         pricePanel.add(priceArea);
         return pricePanel;
     }
+
     private JPanel numberPanel() {
         JPanel numberPanel = new JPanel(new GridLayout(1, 0));
         numberPanel.setBackground(new Color(236, 234, 232));
@@ -111,6 +121,7 @@ public class ProductPanel extends JPanel {
         numberPanel.add(numberArea);
         return numberPanel;
     }
+
     private JPanel brandPanel() {
         JPanel brandPanel = new JPanel(new GridLayout(1, 0));
         brandPanel.setBackground(new Color(236, 234, 232));
@@ -127,6 +138,7 @@ public class ProductPanel extends JPanel {
         brandPanel.add(brandArea);
         return brandPanel;
     }
+
     private JPanel descriptionPanel() {
         JPanel descriptionPanel = new JPanel(new BorderLayout());
         descriptionPanel.setBackground(new Color(236, 234, 232));
@@ -150,8 +162,8 @@ public class ProductPanel extends JPanel {
         return descriptionPanel;
     }
 
-    private JPanel savePanel(){
-        JPanel savePanel = new JPanel(new GridLayout(0,1));
+    private JPanel savePanel() {
+        JPanel savePanel = new JPanel(new GridLayout(0, 1));
         savePanel.setBackground(new Color(198, 233, 243));
         JButton saveButton = new JButton("Зберегти");
         saveButton.setBackground(new Color(128, 118, 146));
@@ -162,25 +174,25 @@ public class ProductPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(nameArea.getText().trim().equals("")){
-                    showIllegalFormat("Назву");
-                    nameArea.setText(product.getName().trim());
-                }else product.setName(nameArea.getText().trim());
-
-                if(!(priceArea.getText().trim().matches("[0-9]{1,13}(\\.[0-9]*)?"))){
-                    showIllegalFormat("Ціну");
-                    priceArea.setText(product.getPrice() + "");
-                } else product.setPrice(Double.valueOf(priceArea.getText().trim()));
-                if (!(numberArea.getText().trim().matches("[0-9]*"))) {
-                    showIllegalFormat("Кількість");
-                    numberArea.setText(product.getNumber() + "");
-                } else product.setNumber(Integer.valueOf(numberArea.getText().trim()));
-                if(brandArea.getText().trim().equals("")){
-                    showIllegalFormat("Назву бренду");
-                    brandArea.setText(product.getBrand().trim());
-                } else product.setBrand(brandArea.getText().trim());
-
-                product.setDescription(descriptionArea.getText().trim());
+//                if(nameArea.getText().trim().equals("")){
+//                    showIllegalFormat("Назву");
+//                    nameArea.setText(product.getName().trim());
+//                }else product.setName(nameArea.getText().trim());
+//
+//                if(!(priceArea.getText().trim().matches("[0-9]{1,13}(\\.[0-9]*)?"))){
+//                    showIllegalFormat("Ціну");
+//                    priceArea.setText(product.getPrice() + "");
+//                } else product.setPrice(Double.valueOf(priceArea.getText().trim()));
+//                if (!(numberArea.getText().trim().matches("[0-9]*"))) {
+//                    showIllegalFormat("Кількість");
+//                    numberArea.setText(product.getNumber() + "");
+//                } else product.setNumber(Integer.valueOf(numberArea.getText().trim()));
+//                if(brandArea.getText().trim().equals("")){
+//                    showIllegalFormat("Назву бренду");
+//                    brandArea.setText(product.getBrand().trim());
+//                } else product.setBrand(brandArea.getText().trim());
+//
+//                product.setDescription(descriptionArea.getText().trim());
             }
         });
 
@@ -193,6 +205,7 @@ public class ProductPanel extends JPanel {
         falsePanel.setBackground(new Color(198, 233, 243));
         return falsePanel;
     }
+
     private JPanel southPanel() {
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 0));
         buttonsPanel.setBackground(new Color(198, 233, 243));
@@ -205,10 +218,10 @@ public class ProductPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeAll();
-                if (programWindow.getSearchPanel()!=null){
+                if (programWindow.getSearchPanel() != null) {
                     programWindow.openStoreWindow();
                 }
-                if (programWindow.getCurrentGroup()!=null) {
+                if (programWindow.getCurrentGroup() != null) {
 
                     programWindow.openGroupWindow(programWindow.getCurrentGroup());
                 }
@@ -262,6 +275,7 @@ public class ProductPanel extends JPanel {
         buttonsPanel.add(deleteProductButton);
         return buttonsPanel;
     }
+
     private void openAddProductWindow(JFrame adProductWindow) {
         adProductWindow.setSize(400, 150);
         adProductWindow.setLocationRelativeTo(null);
@@ -275,7 +289,7 @@ public class ProductPanel extends JPanel {
         adProductWindow.add(centerPanel, BorderLayout.CENTER);
         adProductWindow.add(southPanel, BorderLayout.EAST);
         JLabel howManyLabel = new JLabel("Cкільки одиниць продукту додати?");
-                howManyLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        howManyLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         JTextField textField = new JTextField();
         textField.setSize(50, 50);
         textField.setFont(new Font(Font.SERIF, Font.PLAIN, 45));
@@ -308,6 +322,7 @@ public class ProductPanel extends JPanel {
         southPanel.add(addProduct);
         adProductWindow.setVisible(true);
     }
+
     private void openReduceProductWindow() {
         JFrame reduceProductWindow = new JFrame();
         reduceProductWindow.setSize(400, 150);
@@ -322,7 +337,7 @@ public class ProductPanel extends JPanel {
         reduceProductWindow.add(centerPanel, BorderLayout.CENTER);
         reduceProductWindow.add(southPanel, BorderLayout.EAST);
         JLabel howMany = new JLabel("Cкільки одиниць продукту списати?");
-                howMany.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        howMany.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         JTextField textField = new JTextField();
         textField.setSize(50, 50);
         textField.setFont(new Font(Font.SERIF, Font.PLAIN, 45));
@@ -439,6 +454,7 @@ public class ProductPanel extends JPanel {
         southPanel.add(addProduct);
         reduceProductWindow.setVisible(true);
     }
+
     private void deleteProductWindow() {
         JFrame ad1 = new JFrame();
         ad1.setSize(400, 150);
@@ -463,32 +479,33 @@ public class ProductPanel extends JPanel {
         yes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (programWindow.getCurrentGroup()!=null) {
-
-                    programWindow.getCurrentGroup().deleteProduct(product.getName());
-                    programWindow.remove(ProductPanel.this);
-
-                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
-                    ad1.setVisible(false);
-                } else {
-                    product.setDeleted(true);
-                    programWindow.openStoreWindow();
-                    ad1.setVisible(false);
-                }
-            }
-        });
-        no.setBackground(new Color(128, 118, 146));
-        no.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
-        no.setForeground(new Color(250, 250, 250));
-        no.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ad1.setVisible(false);
+//                if (programWindow.getCurrentGroup()!=null) {
+//
+//                    programWindow.getCurrentGroup().deleteProduct(product.getName());
+//                    programWindow.remove(ProductPanel.this);
+//
+//                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
+//                    ad1.setVisible(false);
+//                } else {
+//                    product.setDeleted(true);
+//                    programWindow.openStoreWindow();
+//                    ad1.setVisible(false);
+//                }
+//            }
+//        });
+//        no.setBackground(new Color(128, 118, 146));
+//        no.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
+//        no.setForeground(new Color(250, 250, 250));
+//        no.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                ad1.setVisible(false);
+//            }
             }
         });
     }
 
-    public void showIllegalFormat(String message){
+    public void showIllegalFormat(String message) {
         JFrame errorMessage = new JFrame();
         errorMessage.setSize(500, 150);
         errorMessage.setLocationRelativeTo(null);

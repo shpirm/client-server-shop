@@ -2,16 +2,30 @@ package Interface.GUI;
 
 import Interface.Program.Group;
 import Interface.Program.Store;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import Structure.Utility.Cypher;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class StorePanel extends JPanel {
+    public Store getStore() {
+        return store;
+    }
+
     private Store store;
+
+    public ProgramWindow getProgramWindow() {
+        return programWindow;
+    }
+
     private ProgramWindow programWindow;
     public StorePanel(Store store, ProgramWindow programWindow) {
         this.store = store;
@@ -90,8 +104,8 @@ public class StorePanel extends JPanel {
         for (int i = 0; i < store.getGroups().size(); i++) {
             panel.add(oneCategoryPanel(store.getGroups().get(i)));
         }
-        if (store.getProducts().size() < 9) {
-            for (int n = 0; n < 9 - store.getProducts().size(); n++)
+        if (store.getGroups().size() < 9) {
+            for (int n = 0; n < 9 - store.getGroups().size(); n++)
             {
                 panel.add(falseProductPanel());
             }
@@ -103,6 +117,7 @@ public class StorePanel extends JPanel {
     }
     private JPanel falseProductPanel() {
         JPanel oneProductPanel = new JPanel(new BorderLayout());
+// oneProductPanel.setToolTipText(product.getDescription());
         oneProductPanel.setBorder(new LineBorder(Color.WHITE));
         oneProductPanel.setPreferredSize(new Dimension(100, 40));
         oneProductPanel.setBackground(new Color(255, 253, 253));
@@ -111,6 +126,7 @@ public class StorePanel extends JPanel {
     private JButton oneCategoryPanel(Group group) {
         JButton button = new JButton(group.getName());
         button.setFont(new Font("Century", Font.PLAIN, 18));
+// button.setToolTipText(group.getDescription());
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,29 +145,11 @@ public class StorePanel extends JPanel {
         southPanel.setBackground(new Color(198, 233, 243));
         southPanel.setBorder(new LineBorder(Color.WHITE));
         southPanel.setPreferredSize(new Dimension(getWidth(), 33));
-        southPanel.add(backButton());
         southPanel.add(addCategoryButton());
-        southPanel.add(createFileButton());
+        southPanel.add(updateButton());
         southPanel.add(statisticsButton());
         return southPanel;
     }
-
-    private JButton backButton() {
-        JButton back = new JButton("Назад"); //Переносить на сторінку назад
-        back.setPreferredSize(new Dimension(120, 25));
-        back.setBackground(new Color(128, 118, 146));
-        back.setForeground(new Color(255, 253, 253));
-        back.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                removeAll();
-                programWindow.openConnectionPanel();
-            }
-        });
-        return back;
-    }
-
     private JButton addCategoryButton() {
         JButton addCat = new JButton("Додати"); //Переносить на сторінку "Додати категорію"
         addCat.setPreferredSize(new Dimension(120, 25));
@@ -182,7 +180,25 @@ public class StorePanel extends JPanel {
         });
         return addCat;
     }
-    private JButton createFileButton() {
+    private JButton updateButton() {
+        JButton addCat = new JButton("Оновити");
+        addCat.setPreferredSize(new Dimension(120, 25));
+        addCat.setBackground(new Color(128, 118, 146));
+        addCat.setForeground(new Color(255, 253, 253));
+        addCat.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
+        addCat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put("text", "text"));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        return addCat;
+    }
+/*    private JButton createFileButton() {
         JButton addCat = new JButton("Зберегти");
         addCat.setPreferredSize(new Dimension(120, 25));
         addCat.setBackground(new Color(128, 118, 146));
@@ -195,7 +211,7 @@ public class StorePanel extends JPanel {
             }
         });
         return addCat;
-    }
+    }*/
 
     private JPanel addCategoryPanel() {
         JPanel addCategoryPanel = new JPanel(new BorderLayout());
@@ -293,27 +309,13 @@ public class StorePanel extends JPanel {
         saveCategory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> unicCatNames = programWindow.getStore().getGroupsNames();
-                System.out.println(unicCatNames);
-                if
-                (!unicCatNames.contains(newCategory.getText().toLowerCase()) &&
-                        !newCategory.getText().equals("")
-                        && !newDetails.getText().equals("")) {
-
-                    unicCatNames.add(newCategory.getText().toLowerCase());
-                    Group newGroup = new Group(newCategory.getText(),
-                            newDetails.getText());
-                    newGroup.setDescription(newDetails.getText());
-                    programWindow.getStore().addGroup(newGroup);
-                    programWindow.remove(StorePanel.this);
-                    programWindow.openStoreWindow();
-                } else if ((newCategory.getText().equals("") ||
-                        newDetails.getText().equals(""))
-                        &&!unicCatNames.contains(newCategory.getText().toLowerCase())) {
-                    showEmptyAreaError();
-                } else {
-                    showUnicNameError();
-                }
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_INSERT,
+                            new JSONObject().put("name", newCategory.getText())
+                                    .put("description", newDetails.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                };
             }
         });
         return saveCategory;

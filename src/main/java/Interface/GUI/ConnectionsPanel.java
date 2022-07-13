@@ -1,12 +1,10 @@
 package Interface.GUI;
 
-import Interface.Program.Group;
-import Interface.Program.Product;
 import Interface.Program.Store;
 import Structure.Client.ClientTCP;
 import Structure.Client.User;
 import Structure.Commands.UserCommand;
-import Structure.Database.Connections;
+import Database.Connections;
 import Structure.Utility.Cypher;
 import org.json.JSONObject;
 
@@ -77,8 +75,8 @@ public class ConnectionsPanel extends JPanel {
         forTitle.setBackground(new Color(198, 233, 243));
         JPanel titles = new JPanel(new GridLayout(1, 2));
         titles.setBackground(new Color(198, 233, 243));
-        JLabel login = new JLabel("Login");
-        JLabel address = new JLabel("Address");
+        JLabel login = new JLabel("Логін");
+        JLabel address = new JLabel("Адреса");
         login.setForeground(new Color(47, 46, 50));
         login.setFont(new Font(Font.SERIF, Font.PLAIN, 30));
         address.setForeground(new Color(47, 46, 50));
@@ -159,7 +157,6 @@ public class ConnectionsPanel extends JPanel {
         southPanel.setBorder(new LineBorder(Color.WHITE));
         southPanel.setPreferredSize(new Dimension(getWidth(), 33));
         southPanel.add(addCategoryButton());
-        southPanel.add(deleteAddress());
         return southPanel;
     }
     private JButton addCategoryButton() {

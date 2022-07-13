@@ -7,6 +7,8 @@ public enum OtherCommand {
     ACCESS_SUCCESS,
     ACCESS_ERROR,
 
+    INSERT_GROUP_SUCCESS,
+
     USER_LIST,
 
     CLOSE
