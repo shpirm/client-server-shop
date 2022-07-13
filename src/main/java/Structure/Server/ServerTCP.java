@@ -44,7 +44,7 @@ public class ServerTCP extends Thread {
 
         while (!shutdown) {
             try {
-                new ClientHandler(serverSocket.accept()).start();
+                new ClientHandler(serverSocket.accept(),clientMap,  processor ).start();
             } catch (IOException e) {
                 try {
                     Thread.sleep(500);
@@ -84,67 +84,6 @@ public class ServerTCP extends Thread {
         return password;
     }
 
-    public class ClientHandler extends Thread {
-        private static int staticUserID = 0;
-        private final int userID;
-
-        private final Socket clientSocket;
-
-        private boolean shutdown;
-
-        private BufferedReader in;
-
-        public ClientHandler(Socket socket) {
-            this.clientSocket = socket;
-            this.userID = staticUserID++;
-
-            clientMap.put(userID, clientSocket);
-        }
-
-        public void run() {
-            try {
-                in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            String inputLine;
-            shutdown = false;
-            while (!shutdown) {
-                try {
-                    if ((inputLine = in.readLine()) != null)
-                        processor.process(Descriptor.decrypt(
-                            parseStringToByte(inputLine)));
-
-                } catch (Exception e) {
-          //          System.out.println("Connection went down");
-                }
-            }
-
-            try {
-                in.close();
-                clientSocket.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public void doStop() {
-            shutdown = true;
-        }
-    }
-
-
-    private byte[] parseStringToByte(String str) {
-        String[] byteValues = str.substring(1, str.length() - 1).split(",");
-        byte[] bytes = new byte[byteValues.length];
-
-        for (int i = 0, len = bytes.length; i < len; i++)
-            bytes[i] = Byte.parseByte(byteValues[i].trim());
-
-        return bytes;
-    }
     public static void main(String[] args) throws Exception {
         try {
             ServerTCP server = ServerTCP.getInstance(3333, "123");

@@ -12,7 +12,7 @@ public class Tester {
 
     public static void main(String[] args) throws Exception {
 
-        Store store = new Store();
+        /*Store store = new Store();
         Product TV = new Product("Телевізор", 37000, 5, "LG", "Діагональ екрана 55 / Роздільна здатність 3840x2160");
         Product fridge = new Product("Холодильник", 19999, 15, "BOSCH", "двокамерний / 400 л");
         Product washingMachine = new Product("Пральна машина", 18300, 22, "Samsung", "7 кг / 84.8 x 59.8 x 59 см");
@@ -60,6 +60,6 @@ public class Tester {
         store.addGroup(instruments);
         store.addGroup(appliances);
 
-        ProgramWindow w = new ProgramWindow(store);
+        ProgramWindow w = new ProgramWindow(store);*/
     }
 }

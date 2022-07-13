@@ -229,6 +229,9 @@ public class ServerProcessor extends Thread {
                                 groups.toString().getBytes(StandardCharsets.UTF_8)));
                     } catch (SQLException e) { System.out.println(e); }
                 }
+                case PRODUCT_FIND ->{
+
+                }
             }
 
 //                case PRODUCT_INSERT -> {

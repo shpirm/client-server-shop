@@ -11,6 +11,7 @@ public enum OtherCommand {
     GROUP_PRODUCT_LIST,
 
     INSERT_GROUP_SUCCESS,
+    PRODUCT_FIND_LIST,
 
     USER_LIST,
 

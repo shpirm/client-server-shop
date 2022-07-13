@@ -206,18 +206,21 @@ public class ClientProcessor extends Thread {
 
                 JSONArray array = jsonObject.getJSONArray("products");
                 for (int i = 0; i < array.length(); i++) {
-                    JSONObject obj = array.getJSONObject(i);
+                    jsonObject = array.getJSONObject(i);
                     panel.getProgramWindow().getStore().getGroup(groupName).getProducts().add(new Product(
-                            String.valueOf(obj.get("name")),
-                            obj.getInt("amount"),
-                            obj.getDouble("price"),
-                            String.valueOf(obj.get("brand")),
-                            String.valueOf(obj.get("description"))
+                            String.valueOf(jsonObject.get("name")),
+                            jsonObject.getInt("amount"),
+                            jsonObject.getDouble("price"),
+                            String.valueOf(jsonObject.get("brand")),
+                            String.valueOf(jsonObject.get("description"))
                     ));
                 }
 
                 panel.getProgramWindow().openGroupWindow(
                         panel.getProgramWindow().getStore().getGroup(groupName));
+            }
+            case PRODUCT_FIND_LIST ->{
+
             }
         }
     }
