@@ -1,12 +1,10 @@
 package Interface.Program;
 public class Product {
-    private int productID;
     private String name;
     private String description;
     private String brand;
     private double price;
     private int number;
-    private int groupID;
 
     /**
      * Стандартний конструктор для створення об'єкта Product
@@ -17,16 +15,13 @@ public class Product {
      * @param brand       виробник товару
      * @param description опис товару
      */
-    public Product(int productID, String name, int number, double price, int groupID, String brand,
+    public Product(String name, int number, double price, String brand,
                    String description) {
-        this.productID = productID;
         this.name = name;
         this.price = price;
         this.number = number;
-        this.groupID = groupID;
         this.brand = brand;
         this.description = description;
-
     }
 
     /**
@@ -72,10 +67,6 @@ public class Product {
                 " Опис: " + description;
     }
 
-    public int getProductID() { return productID; }
-
-    public void setProductID(int productID) { this.productID = productID; }
-
     public String getName() {
         return name;
     }
@@ -114,13 +105,5 @@ public class Product {
 
     public void setNumber(int number) {
         this.number = number;
-    }
-
-    public int getGroupID() {
-        return groupID;
-    }
-
-    public void setGroupID(int groupID) {
-        this.groupID = groupID;
     }
 }

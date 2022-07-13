@@ -80,11 +80,10 @@ public class ShopDatabase {
         statement.setString(1, name);
         ResultSet res = statement.executeQuery();
 
-        Product product = new Product(res.getInt("ProductID"),
+        Product product = new Product(
                 res.getString("ProductName"),
                 res.getInt("ProductAmount"),
                 res.getDouble("ProductPrice"),
-                res.getInt("GroupID"),
                 res.getString("Brand"),
                 res.getString("Description")
                 );
@@ -226,6 +225,22 @@ public class ShopDatabase {
         return list;
     }
 
+    public ArrayList<Group> getGroupList() throws SQLException {
+        ArrayList<Group> list = new ArrayList<>();
+        Statement st = con.createStatement();
+        ResultSet res = st.executeQuery("SELECT * FROM ProductGroup");
+
+        while (res.next()) {
+            list.add(new Group(
+                    res.getString("GroupName"),
+                    res.getString("Description"))
+            );
+        }
+        res.close();
+        st.close();
+        return list;
+    }
+
 
     public ArrayList<Product> productListByCriteria(Criteria criteria) {
         List<String> criterias = new ArrayList();
@@ -246,11 +261,10 @@ public class ShopDatabase {
             ResultSet res = st.executeQuery(sql);
 
             while (res.next()) {
-                list.add(new Product(res.getInt("ProductID"),
+                list.add(new Product(
                         res.getString("ProductName"),
                         res.getInt("ProductAmount"),
                         res.getDouble("ProductPrice"),
-                        res.getInt("GroupID"),
                         res.getString("Brand"),
                         res.getString("Description")
                 ));
@@ -275,19 +289,18 @@ public class ShopDatabase {
         statement.setInt(1, groupID);
         ResultSet res = statement.executeQuery();
 
-
         while (res.next()) {
-            list.add(new Product(res.getInt("ProductID"),
+            list.add(new Product(
                     res.getString("ProductName"),
                     res.getInt("ProductAmount"),
                     res.getDouble("ProductPrice"),
-                    res.getInt("GroupID"),
                     res.getString("Brand"),
                     res.getString("Description")
             ));
             res.close();
             statement.close();
         }
+        System.out.println(list);
         return list;
     }
 

@@ -1,16 +1,23 @@
 package Interface.Program;
+import java.util.ArrayList;
 import java.util.Objects;
 public class Group {
-    public String name;
-    public String description;
+    private String name;
+    private String description;
+
     /**
      * Конструктор для створення групи товарів
      *
      * @param name
      */
+
+    private ArrayList<Product> products;
+
     public Group(String name, String description) {
         this.name = name;
         this.description = description;
+
+        this.products = new ArrayList<>();
     }
     public Group(String name) {
         this.name = name;
@@ -47,5 +54,9 @@ public class Group {
     }
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ArrayList<Product> getProducts() {
+        return products;
     }
 }

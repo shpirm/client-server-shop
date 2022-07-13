@@ -4,14 +4,18 @@ import Interface.GUI.ConnectionsPanel;
 import Interface.GUI.CurrentPanel;
 import Interface.GUI.StorePanel;
 import Interface.Program.Group;
+import Interface.Program.Product;
 import Structure.Commands.OtherCommand;
 import Database.Connections;
+import Structure.Commands.UserCommand;
 import Structure.Packet.Packet;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ClientProcessor extends Thread {
@@ -123,11 +127,11 @@ public class ClientProcessor extends Thread {
 
                 window.setVisible(true);
 
-                panel.getProgramWindow().remove(panel);
                 panel.getProgramWindow().openStoreWindow();
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getStorePanel());
 
                 User.getInstance().setConnection(ClientTCP.clientMapID.get(packet.getBMsg().getBUserId()));
+                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put("text","text"));
             }
             case ACCESS_ERROR -> {
                 ConnectionsPanel panel = (ConnectionsPanel) CurrentPanel.getInstance().getPanel();
@@ -156,9 +160,7 @@ public class ClientProcessor extends Thread {
                         String.valueOf(jsonObject.get("name")),
                         String.valueOf(jsonObject.get("description")));
 
-                panel.getStore().getGroups().add(group);
-                panel.getProgramWindow().remove(panel);
-                panel.getProgramWindow().openStoreWindow();
+                panel.getProgramWindow().getStore().getGroups().add(group);
 
                 JFrame window = new JFrame();
                 window.setSize(500, 80);
@@ -176,24 +178,47 @@ public class ClientProcessor extends Thread {
                 window.add(info);
 
                 window.setVisible(true);
+
+                panel.getProgramWindow().remove(panel.getProgramWindow().getStorePanel());
+                panel.getProgramWindow().openStoreWindow();
             }
-//            case USER_LIST -> {
-//                JSONArray array = jsonObject.getJSONArray("users");
-//                ArrayList<Connections> list = new ArrayList();
-//                for (int i = 0; i < array.length(); i++) {
-//                    JSONObject obj = array.getJSONObject(i);
-//                    list.add(new Connections(
-//                            String.valueOf(obj.get("login")),
-//                            String.valueOf(obj.get("host")),
-//                            obj.getInt("port")));
-//                }
-//
-//                ConnectionsPanel panel = (ConnectionsPanel) CurrentPanel.getInstance().getPanel();
-//                panel.setUsers(list);
-//
-//                panel.removeAll();
-//                panel.revalidate();
-//            }
+            case GROUP_LIST -> {
+                StorePanel panel = (StorePanel) CurrentPanel.getInstance().getPanel();
+
+                panel.getProgramWindow().getStore().getGroups().clear();
+
+                JSONArray array = jsonObject.getJSONArray("groups");
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject obj = array.getJSONObject(i);
+                    panel.getProgramWindow().getStore().getGroups().add(new Group (
+                            String.valueOf(obj.get("name")),
+                            String.valueOf(obj.get("description"))
+                    ));
+                }
+
+                panel.getProgramWindow().remove(panel.getProgramWindow().getStorePanel());
+                panel.getProgramWindow().openStoreWindow();
+            }
+            case GROUP_PRODUCT_LIST -> {
+                StorePanel panel = (StorePanel) CurrentPanel.getInstance().getPanel();
+                String groupName = String.valueOf(jsonObject.get("group"));
+                panel.getProgramWindow().getStore().getGroup(groupName).getProducts().clear();
+
+                JSONArray array = jsonObject.getJSONArray("products");
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject obj = array.getJSONObject(i);
+                    panel.getProgramWindow().getStore().getGroup(groupName).getProducts().add(new Product(
+                            String.valueOf(obj.get("name")),
+                            obj.getInt("amount"),
+                            obj.getDouble("price"),
+                            String.valueOf(obj.get("brand")),
+                            String.valueOf(obj.get("description"))
+                    ));
+                }
+
+                panel.getProgramWindow().openGroupWindow(
+                        panel.getProgramWindow().getStore().getGroup(groupName));
+            }
         }
     }
 }

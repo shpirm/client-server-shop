@@ -1,6 +1,9 @@
 package Structure.Server;
 
+import Database.Criteria;
 import Database.ShopDatabase;
+import Interface.Program.Group;
+import Interface.Program.Product;
 import Structure.Commands.OtherCommand;
 import Structure.Commands.UserCommand;
 import Database.Connections;
@@ -175,6 +178,56 @@ public class ServerProcessor extends Thread {
                     obj.put("answer", "Group " + name + " added!");
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_GROUP_SUCCESS,
                             obj.toString().getBytes(StandardCharsets.UTF_8)));
+                }
+                case GROUP_LIST -> {
+                    JSONArray arr = new JSONArray();
+                    ArrayList<Group> array = new ArrayList<>();
+
+                    synchronized (shopDatabase) {
+                        array = shopDatabase.getGroupList();
+                    }
+                    System.out.println(array);
+                    for (Group group : array) {
+                        JSONObject userObj = new JSONObject();
+                        userObj.put("name", group.getName());
+                        userObj.put("description", group.getDescription());
+                        arr.put(userObj);
+                    }
+
+                    JSONObject groups = new JSONObject();
+                    groups.put("groups", arr);
+                    System.out.println(groups);
+
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_LIST,
+                            groups.toString().getBytes(StandardCharsets.UTF_8)));
+                }
+                case GROUP_PRODUCT_LIST -> {
+                    try {
+                        JSONArray arr = new JSONArray();
+                        ArrayList<Product> array = new ArrayList<>();
+
+                        synchronized (shopDatabase) {
+                            array = shopDatabase.getAllProductsInGroup(String.valueOf(obj.get("group name")));
+                        }
+                        System.out.println(array);
+                        for (Product product : array) {
+                            JSONObject userObj = new JSONObject();
+                            userObj.put("name", product.getName());
+                            userObj.put("amount", product.getNumber());
+                            userObj.put("price", product.getPrice());
+                            userObj.put("brand", product.getBrand());
+                            userObj.put("description", product.getDescription());
+                            arr.put(userObj);
+                        }
+
+                        JSONObject groups = new JSONObject();
+                        groups.put("products", arr);
+                        groups.put("group", obj.get("group name"));
+                        System.out.println(groups);
+
+                        packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_PRODUCT_LIST,
+                                groups.toString().getBytes(StandardCharsets.UTF_8)));
+                    } catch (SQLException e) { System.out.println(e); }
                 }
             }
 

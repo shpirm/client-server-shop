@@ -56,6 +56,6 @@ public class Main {
 //        store.addGroup(instruments);
 //        store.addGroup(appliances);
 
-        ProgramWindow w = new ProgramWindow(store);
+        ProgramWindow w = new ProgramWindow();
     }
 }

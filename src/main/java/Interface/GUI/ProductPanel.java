@@ -533,3 +533,4 @@ public class ProductPanel extends JPanel {
         });
     }
 }
+

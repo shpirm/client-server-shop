@@ -16,6 +16,11 @@ public class ProgramWindow extends JFrame {
     private Product currentProduct;
 
     private StorePanel storePanel;
+
+    public GroupPanel getGroupPanel() {
+        return groupPanel;
+    }
+
     private GroupPanel groupPanel;
     private ProductPanel productPanel;
 
@@ -27,9 +32,10 @@ public class ProgramWindow extends JFrame {
     private SearchPanel searchPanel;
     private ConnectionsPanel connectionsPanel;
 
-    public ProgramWindow(Store store) {
+    public ProgramWindow() {
         super("Склад");
-        this.store = store;
+        this.store = new Store();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocation(120, 20);
         setPreferredSize(new Dimension(1000, 650));
@@ -74,6 +80,9 @@ public class ProgramWindow extends JFrame {
         }
         if (searchPanel != null) {
             remove(searchPanel);
+        }
+        if (connectionsPanel != null) {
+            remove(connectionsPanel);
         }
         storePanel = new StorePanel(store, this);
         add(storePanel);

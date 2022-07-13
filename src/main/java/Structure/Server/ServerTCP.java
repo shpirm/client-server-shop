@@ -84,7 +84,7 @@ public class ServerTCP extends Thread {
         return password;
     }
 
-    private class ClientHandler extends Thread {
+    public class ClientHandler extends Thread {
         private static int staticUserID = 0;
         private final int userID;
 

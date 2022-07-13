@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class StorePanel extends JPanel {
-    public Store getStore() {
-        return store;
-    }
 
     private Store store;
 
@@ -126,11 +123,17 @@ public class StorePanel extends JPanel {
     private JButton oneCategoryPanel(Group group) {
         JButton button = new JButton(group.getName());
         button.setFont(new Font("Century", Font.PLAIN, 18));
-// button.setToolTipText(group.getDescription());
+        button.setToolTipText(group.getDescription());
+
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openGroupWindow(group);
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_PRODUCT_LIST,
+                            new JSONObject().put("group name", group.getName()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         button.setPreferredSize(new Dimension(130, 50));

@@ -176,26 +176,6 @@ public class ConnectionsPanel extends JPanel {
         return addCat;
     }
 
-    private JButton deleteAddress() {
-        JButton deleteAdd = new JButton("Видалити");
-        deleteAdd.setPreferredSize(new Dimension(120, 25));
-        deleteAdd.setBackground(new Color(128, 118, 146));
-        deleteAdd.setForeground(new Color(255, 253, 253));
-        deleteAdd.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
-        deleteAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    User.getInstance().getConnection().
-                            sendMessage(UserCommand.USER_LIST, new JSONObject().put("text", "text"));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-        return deleteAdd;
-    }
-
     private JTextArea loginArea;
     private JTextArea passwordArea;
     private JTextArea hostnameArea;

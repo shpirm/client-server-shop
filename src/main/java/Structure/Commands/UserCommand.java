@@ -3,7 +3,8 @@ package Structure.Commands;
 public enum UserCommand {
     CONNECT_REQUEST,
     ACCESS_REQUEST,
-    USER_LIST,
+
+    GROUP_PRODUCT_LIST,
 
     PRODUCT_INSERT,
     PRODUCT_UPDATE,

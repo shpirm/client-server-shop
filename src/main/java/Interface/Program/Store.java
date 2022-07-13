@@ -42,14 +42,10 @@ public class Store {
 //        }
 //        return false;
 //    }
-//    public Group getGroup(String name) {
-//        try {
-//            return new Connector().readGroup(name);
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//        return null;
-//    }
+    public Group getGroup(String name) {
+        for (Group group : groups) if (group.getName() == name) return group;
+        return null;
+    }
 //    /**
 //     * Повертає список усіх продуктів складу
 //     */
