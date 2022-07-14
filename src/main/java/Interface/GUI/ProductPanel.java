@@ -1,12 +1,16 @@
 package Interface.GUI;
 
 import Interface.Program.Product;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class ProductPanel extends JPanel {
     private Product product;
@@ -79,7 +83,7 @@ public class ProductPanel extends JPanel {
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        nameArea = new JTextArea(" " + product.getName() +
+        nameArea = new JTextArea("" + product.getName() +
                 "");
         nameArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         nameArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
@@ -96,7 +100,7 @@ public class ProductPanel extends JPanel {
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
         priceLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        priceArea = new JTextArea(" " + product.getPrice()
+        priceArea = new JTextArea("" + product.getPrice()
                 + "");
         priceArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         priceArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
@@ -113,7 +117,7 @@ public class ProductPanel extends JPanel {
         numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         numberLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        numberArea = new JTextArea(" " +
+        numberArea = new JTextArea("" +
                 product.getNumber() + "");
         numberArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         numberArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
@@ -130,7 +134,7 @@ public class ProductPanel extends JPanel {
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
         brandLabel.setHorizontalAlignment(SwingConstants.CENTER);
         brandLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        brandArea = new JTextArea(" " + product.getBrand()
+        brandArea = new JTextArea("" + product.getBrand()
                 + "");
         brandArea.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
         brandArea.setBorder(new LineBorder(Color.LIGHT_GRAY));
@@ -151,7 +155,7 @@ public class ProductPanel extends JPanel {
 
         descriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         descriptionLabel.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        descriptionArea = new JTextArea(" " +
+        descriptionArea = new JTextArea("" +
                 product.getDescription() + "");
         descriptionArea.setFont(new Font(Font.SERIF, Font.PLAIN,
                 18));
@@ -174,6 +178,19 @@ public class ProductPanel extends JPanel {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_UPDATE,
+                            new JSONObject()
+                                    .put("old name", product.getName())
+                                    .put("new name", nameArea.getText())
+                                    .put("amount", numberArea.getText())
+                                    .put("price", priceArea.getText())
+                                    .put("brand", brandArea.getText())
+                                    .put("description", descriptionArea.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
 //                if(nameArea.getText().trim().equals("")){
 //                    showIllegalFormat("Назву");
 //                    nameArea.setText(product.getName().trim());
@@ -195,7 +212,6 @@ public class ProductPanel extends JPanel {
 //                product.setDescription(descriptionArea.getText().trim());
             }
         });
-
         savePanel.add(saveButton);
         return savePanel;
     }
@@ -300,20 +316,14 @@ public class ProductPanel extends JPanel {
         addProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeAll();
                 try {
-                    String s = textField.getText();
-                    if (s.matches("[0-9]*")) {
-                        product.add(Integer.valueOf(s));
-                        programWindow.revalidate();
-                        addProduct.removeAll();
-                        adProductWindow.setVisible(false);
-                        programWindow.remove(ProductPanel.this);
-                        programWindow.openProductWindow(product);
-                    } else {
-                        textField.setText(null);
-                    }
-                } catch (NumberFormatException ex) {
-                    textField.setText("");
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_AMOUNT_ADD,
+                            new JSONObject().put("product", product.getName())
+                                    .put("amount", textField.getText())
+                    );
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
                 }
             }
         });

@@ -56,6 +56,7 @@ public class GroupPanel extends JPanel {
         return titlePanel;
     }
 
+
     private JPanel searchPanel() {
         JPanel searchPanel = new JPanel((new FlowLayout()));
         searchPanel.setBackground(new Color(198, 233, 243));
@@ -70,13 +71,19 @@ public class GroupPanel extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openSearchWindow(searchText.getText());
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
+                            new JSONObject().put("searchText", searchText.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         searchPanel.add(searchText);
         searchPanel.add(searchButton);
         return searchPanel;
     }
+
 
     private JPanel productsTitle() {
         JPanel productsTitle = new JPanel(new FlowLayout());
@@ -168,7 +175,7 @@ public class GroupPanel extends JPanel {
         statisticsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //       programWindow.openGroupStatisticsWindow(group);
+                  //     programWindow.openGroupStatisticsWindow(group);
             }
         });
         headerTable.add(productName);
@@ -209,6 +216,7 @@ public class GroupPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GroupPanel.this.removeAll();
                 programWindow.openProductWindow(product);
             }
         });

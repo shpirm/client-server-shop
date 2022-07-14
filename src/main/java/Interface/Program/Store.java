@@ -7,6 +7,12 @@ import java.util.Objects;
 public class Store {
     public ArrayList<Group> groups = new ArrayList<>(); //список груп товарів
 
+    public ArrayList<Product> searchedProducts = new ArrayList<>();
+
+    public ArrayList<Product> findProducts() {
+        return searchedProducts;
+    }
+
     public ArrayList<Group> getGroups() {
         return groups;
     }

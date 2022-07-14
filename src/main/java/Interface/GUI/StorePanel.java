@@ -66,7 +66,12 @@ public class StorePanel extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openSearchWindow(searchText.getText());
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
+                            new JSONObject().put("searchText", searchText.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         searchPanel.add(searchText);

@@ -14,9 +14,9 @@ public enum OtherCommand {
     DELETE_GROUP,
 
     INSERT_PRODUCT_SUCCESS,
+    PRODUCT_UPDATE_SUCCESS,
 
-
-    USER_LIST,
+    PRODUCT_FIND_LIST,
 
     CLOSE
 }

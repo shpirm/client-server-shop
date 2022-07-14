@@ -2,12 +2,16 @@ package Interface.GUI;
 
 import Interface.Program.Product;
 import Interface.Program.Store;
+import Structure.Client.User;
+import Structure.Commands.UserCommand;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 public class SearchPanel extends JPanel {
     Store store;
@@ -64,8 +68,13 @@ public class SearchPanel extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                programWindow.openSearchWindow(searchText.getText());
+                programWindow.removeAll();
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
+                            new JSONObject().put("searchText", searchText.getText()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         searchPanel.add(searchText);
@@ -90,17 +99,17 @@ public class SearchPanel extends JPanel {
         panel.setBackground(Color.WHITE);
         panel.add(header(), BorderLayout.NORTH);
         JPanel prodPanel = new JPanel(new GridLayout(0, 1));
-//              ArrayList<Product> results = store.findProducts(searchText);
-//        if (results != null) {
-//            for (int i = 0; i < results.size(); i++) {
-//                prodPanel.add(oneProductPanel(results.get(i)));
-//            }
-//        }
-//        if (results.size()<9){
-//            for (int n = 0; n< 9 - results.size(); n++){
-//                prodPanel.add(falseProductPanel());
-//            }
-//        }
+        ArrayList<Product> results = store.findProducts();
+        if (results != null) {
+            for (int i = 0; i < results.size(); i++) {
+                prodPanel.add(oneProductPanel(results.get(i)));
+            }
+        }
+        if (results.size()<9){
+            for (int n = 0; n< 9 - results.size(); n++){
+                prodPanel.add(falseProductPanel());
+            }
+        }
         panel.add(prodPanel, BorderLayout.CENTER);
         JScrollPane scroll = new JScrollPane(panel);
         scroll.setBackground(new Color(198, 233, 243));
@@ -193,8 +202,8 @@ public class SearchPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                programWindow.removeAll();
                 programWindow.openProductWindow(product);
-                programWindow.remove(SearchPanel.this);
             }
         });
         productPanel.add(productName);
@@ -220,6 +229,7 @@ public class SearchPanel extends JPanel {
         returnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                programWindow.removeAll();
                 programWindow.openStoreWindow();
             }
         });

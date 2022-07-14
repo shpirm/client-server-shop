@@ -218,6 +218,7 @@ public class ClientProcessor extends Thread {
                     ));
                 }
 
+                panel.removeAll();
                 panel.getProgramWindow().openGroupWindow(
                         panel.getProgramWindow().getStore().getGroup(groupName));
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getGroupPanel());
@@ -263,6 +264,42 @@ public class ClientProcessor extends Thread {
 
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getStorePanel());
                 User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put(" "," "));
+            }
+            case PRODUCT_FIND_LIST -> {
+                StorePanel panel = (StorePanel) CurrentPanel.getInstance().getPanel();
+                panel.getProgramWindow().openSearchWindow();
+                panel.getProgramWindow().getStore().searchedProducts = new ArrayList<>();
+
+                JSONArray array = jsonObject.getJSONArray("products");
+                for (int i = 0; i < array.length(); i++) {
+                    jsonObject = array.getJSONObject(i);
+                    panel.getProgramWindow().getStore().findProducts().add(new Product(
+                            String.valueOf(jsonObject.get("name")),
+                            jsonObject.getInt("amount"),
+                            jsonObject.getDouble("price"),
+                            String.valueOf(jsonObject.get("brand")),
+                            String.valueOf(jsonObject.get("description"))
+                    ));
+                }
+                panel.removeAll();
+                panel.getProgramWindow().openSearchWindow();
+            }
+            case PRODUCT_UPDATE_SUCCESS -> {
+                JFrame window = new JFrame();
+                window.setSize(500, 80);
+                window.setLocationRelativeTo(null);
+                JPanel info = new JPanel(new GridLayout(1, 1));
+                info.setBackground(new Color(198, 233, 243));
+
+                JPanel forTitle = new JPanel(new FlowLayout());
+
+                JLabel label = new JLabel(String.valueOf(jsonObject.get("answer")));
+                label.setFont(new Font(Font.SERIF, Font.PLAIN, 25));
+                forTitle.add(label);
+
+                info.add(forTitle);
+                window.add(info);
+                window.setVisible(true);
             }
         }
     }

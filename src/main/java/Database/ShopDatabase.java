@@ -25,7 +25,7 @@ public class ShopDatabase {
                     "CREATE TABLE if NOT EXISTS 'Product' (" +
                             "'ProductID' INTEGER PRIMARY KEY AUTOINCREMENT, " +
                             "'ProductName' VARCHAR(20) NOT NULL UNIQUE, " +
-                            "'ProductAmount' INT DEFAULT 0, " +
+                            "'ProductAmount' INT DEFAULT 0 CHECK(ProductAmount > 0), " +
                             "'ProductPrice' DECIMAL DEFAULT 0, " +
                             "'GroupID' INTEGER DEFAULT 0, " +
                             "'Brand' VARCHAR(20) DEFAULT '', " +
@@ -126,28 +126,30 @@ public class ShopDatabase {
         return group;
     }
 
-    public void updateProduct(String oldName, String newName, int amount, double price, String groupName, String brand,String description) throws SQLException {
+    public void updateProduct(String oldName, String newName, int amount, double price, String brand, String description) throws SQLException {
         PreparedStatement statement = con.prepareStatement(
-                "SELECT * FROM ProductGroup WHERE GroupName = ?");
-
-        statement.setString(1, groupName);
-        ResultSet resGroup = statement.executeQuery();
-        int groupID = resGroup.getInt("GroupID");
-
-        statement = con.prepareStatement(
-                "UPDATE Product SET ProductName = ?, ProductAmount = ?, ProductPrice = ?, GroupID = ?, "+
+                "UPDATE Product SET ProductName = ?, ProductAmount = ?, ProductPrice = ?,  "+
                         "Brand = ?, Description = ? WHERE ProductName = ?");
         statement.setString(1, newName);
         statement.setInt(2, amount);
         statement.setDouble(3, price);
-        statement.setInt(4, groupID);
-        statement.setString(5, brand);
-        statement.setString(6, description);
-        statement.setString(7, oldName);
+        statement.setString(4, brand);
+        statement.setString(5, description);
+        statement.setString(6, oldName);
 
         statement.executeUpdate();
         statement.close();
     }
+    public void addProductAmount(String name, int amount) throws SQLException {
+        PreparedStatement statement = con.prepareStatement(
+                "UPDATE Product SET ProductAmount = ProductAmount + ? WHERE ProductName = ?");
+        statement.setInt(1, amount);
+        statement.setString(1, name);
+
+        statement.executeUpdate();
+        statement.close();
+    }
+
     public void updateGroup(String oldName, String newName, String description) throws SQLException {
 
         PreparedStatement statement = con.prepareStatement(
@@ -268,13 +270,15 @@ public class ShopDatabase {
                         res.getString("Brand"),
                         res.getString("Description")
                 ));
-                res.close();
-                st.close();
             }
+
+            res.close();
+            st.close();
         }catch(SQLException e){
             System.out.println("Не вірний SQL запит на вибірку даних");
             e.printStackTrace();
         }
+
         return list;
     }
     public ArrayList<Product> getAllProductsInGroup(String groupName) throws SQLException {
