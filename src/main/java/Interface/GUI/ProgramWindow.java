@@ -22,6 +22,11 @@ public class ProgramWindow extends JFrame {
     }
 
     private GroupPanel groupPanel;
+
+    public ProductPanel getProductPanel() {
+        return productPanel;
+    }
+
     private ProductPanel productPanel;
 
     public ArrayList<Connections> getUsers() {

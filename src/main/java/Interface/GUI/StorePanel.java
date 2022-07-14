@@ -66,6 +66,7 @@ public class StorePanel extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                removeAll();
                 try {
                     User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
                             new JSONObject().put("searchText", searchText.getText()));
@@ -156,6 +157,7 @@ public class StorePanel extends JPanel {
         southPanel.setBackground(new Color(198, 233, 243));
         southPanel.setBorder(new LineBorder(Color.WHITE));
         southPanel.setPreferredSize(new Dimension(getWidth(), 33));
+        southPanel.add(cancelButton());
         southPanel.add(addCategoryButton());
         southPanel.add(updateButton());
         southPanel.add(statisticsButton());
@@ -177,6 +179,23 @@ public class StorePanel extends JPanel {
         });
         return addCat;
     }
+
+    private JButton cancelButton() {
+        JButton addCat = new JButton("Назад"); //Переносить на сторінку "Додати категорію"
+        addCat.setPreferredSize(new Dimension(120, 25));
+        addCat.setBackground(new Color(128, 118, 146));
+        addCat.setForeground(new Color(255, 253, 253));
+        addCat.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
+        addCat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeAll();
+                getProgramWindow().openConnectionPanel();
+                revalidate();
+            }
+        });
+        return addCat;
+    }
     private JButton statisticsButton() {
         JButton addCat = new JButton("Статистика");
         addCat.setPreferredSize(new Dimension(120, 25));
@@ -186,7 +205,12 @@ public class StorePanel extends JPanel {
         addCat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.openStatisticsWindow();
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.SHOP_UPDATE,
+                            new JSONObject());
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         return addCat;

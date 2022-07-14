@@ -4,6 +4,8 @@ public enum UserCommand {
     CONNECT_REQUEST,
     ACCESS_REQUEST,
 
+    SHOP_UPDATE,
+
     GROUP_PRODUCT_LIST,
     GROUP_LIST,
 
@@ -13,6 +15,7 @@ public enum UserCommand {
     PRODUCT_DELETE,
 
     PRODUCT_AMOUNT_ADD,
+    PRODUCT_AMOUNT_REDUCE,
 
     GROUP_INSERT,
     GROUP_UPDATE,

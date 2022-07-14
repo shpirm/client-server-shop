@@ -54,7 +54,6 @@ public class ShopDatabase {
     }
 
     public void insertProduct(String name, int amount, double price, String groupName, String brand,String description) throws SQLException {
-        System.out.print("insert Product");
         PreparedStatement statement = con.prepareStatement("SELECT * FROM 'ProductGroup' WHERE GroupName = ?");
         statement.setString(1, groupName);
         ResultSet res = statement.executeQuery();
@@ -141,10 +140,30 @@ public class ShopDatabase {
         statement.close();
     }
     public void addProductAmount(String name, int amount) throws SQLException {
-        PreparedStatement statement = con.prepareStatement(
-                "UPDATE Product SET ProductAmount = ProductAmount + ? WHERE ProductName = ?");
-        statement.setInt(1, amount);
+        PreparedStatement statement = con.prepareStatement("SELECT ProductAmount FROM Product WHERE ProductName = ?");
         statement.setString(1, name);
+        ResultSet res = statement.executeQuery();
+
+        statement = con.prepareStatement(
+                "UPDATE Product SET ProductAmount = ? WHERE ProductName = ?");
+        statement.setInt(1, amount + res.getInt("ProductAmount"));
+        statement.setString(2, name);
+
+        statement.executeUpdate();
+        statement.close();
+    }
+
+    public void reduceProductAmount(String name, int amount) throws SQLException {
+        PreparedStatement statement = con.prepareStatement("SELECT ProductAmount FROM Product WHERE ProductName = ?");
+        statement.setString(1, name);
+        ResultSet res = statement.executeQuery();
+
+        if (res.getInt("ProductAmount") - amount < 0) throw new SQLException("Incorrect value. Amount < 0");
+
+        statement = con.prepareStatement(
+                "UPDATE Product SET ProductAmount = ? WHERE ProductName = ?");
+        statement.setInt(1, res.getInt("ProductAmount") - amount);
+        statement.setString(2, name);
 
         statement.executeUpdate();
         statement.close();

@@ -61,17 +61,6 @@ public class ServerTCP extends Thread {
         }
     }
 
-    public void stopConnection(int userId) throws IOException {
-        Socket socket = clientMap.get(userId);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(socket.getInputStream()));
-
-        clientMap.remove(userId);
-        socket.close();
-        in.close();
-    }
-
     public void doStop() {
         shutdown = true;
     }
@@ -84,7 +73,7 @@ public class ServerTCP extends Thread {
         return password;
     }
 
-    public class ClientHandler extends Thread {
+    private class ClientHandler extends Thread {
         private static int staticUserID = 0;
         private final int userID;
 

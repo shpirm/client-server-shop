@@ -38,9 +38,8 @@ public class GroupPanel extends JPanel {
     }
 
     private JPanel northPanel() {
-        JPanel northPanel = new JPanel(new GridLayout(3, 1));
+        JPanel northPanel = new JPanel(new GridLayout(2, 1));
         northPanel.add(titleProductPanel());
-        northPanel.add(searchPanel());
         northPanel.add(productsTitle());
         return northPanel;
     }
@@ -55,35 +54,6 @@ public class GroupPanel extends JPanel {
         titlePanel.add(title);
         return titlePanel;
     }
-
-
-    private JPanel searchPanel() {
-        JPanel searchPanel = new JPanel((new FlowLayout()));
-        searchPanel.setBackground(new Color(198, 233, 243));
-        JTextArea searchText = new JTextArea(1, 30);
-        searchText.setFont(new Font(Font.SERIF, Font.PLAIN, 25));
-        searchText.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        JButton searchButton = new JButton("Пошук"); //Шукає середвсіх груп та всіх продуктів
-        searchButton.setPreferredSize(new Dimension(110, 33));
-        searchButton.setBackground(new Color(128, 118, 146));
-        searchButton.setForeground(new Color(255, 253, 253));
-        searchButton.setFont(new Font(Font.SERIF, Font.PLAIN, 17));
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_FIND,
-                            new JSONObject().put("searchText", searchText.getText()));
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-        searchPanel.add(searchText);
-        searchPanel.add(searchButton);
-        return searchPanel;
-    }
-
 
     private JPanel productsTitle() {
         JPanel productsTitle = new JPanel(new FlowLayout());
@@ -165,19 +135,13 @@ public class GroupPanel extends JPanel {
         productBrand.setBorder(new LineBorder(Color.LIGHT_GRAY));
         productBrand.setFont(new Font("Century", Font.PLAIN, 15));
         productBrand.setForeground(Color.white);
-        JButton statisticsButton = new JButton("Статистика");
+        JButton statisticsButton = new JButton("Інформація");
         statisticsButton.setBorder(new LineBorder(Color.LIGHT_GRAY));
         statisticsButton.setPreferredSize(new Dimension(120, 15));
         statisticsButton.setBackground(new Color(80, 80, 80));
         statisticsButton.setForeground(new Color(255, 253, 253));
         statisticsButton.setFont(new Font("Century", Font.PLAIN,
                 15));
-        statisticsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                  //     programWindow.openGroupStatisticsWindow(group);
-            }
-        });
         headerTable.add(productName);
         headerTable.add(productPrice);
         headerTable.add(productNumber);
@@ -218,6 +182,7 @@ public class GroupPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 GroupPanel.this.removeAll();
                 programWindow.openProductWindow(product);
+                CurrentPanel.getInstance().setPanel(getProgramWindow().getProductPanel());
             }
         });
         productPanel.add(productName);

@@ -55,6 +55,15 @@ public class Store {
         }
         return null;
     }
+
+    public Product getProduct(String name) {
+        for (Group group : groups) {
+            for (Product product : group.getProducts()) {
+                if (Objects.equals(product.getName(), name)) return product;
+            }
+        }
+        return null;
+    }
 //    /**
 //     * Повертає список усіх продуктів складу
 //     */

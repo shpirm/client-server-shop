@@ -15,6 +15,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 public class SearchPanel extends JPanel {
     Store store;
+
+    public ProgramWindow getProgramWindow() {
+        return programWindow;
+    }
+
     ProgramWindow programWindow;
     String searchText;
     public SearchPanel(Store store, ProgramWindow programWindow) {
@@ -202,8 +207,9 @@ public class SearchPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.removeAll();
+                SearchPanel.this.removeAll();
                 programWindow.openProductWindow(product);
+                CurrentPanel.getInstance().setPanel(getProgramWindow().getProductPanel());
             }
         });
         productPanel.add(productName);
@@ -229,7 +235,7 @@ public class SearchPanel extends JPanel {
         returnBack.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                programWindow.removeAll();
+                SearchPanel.this.removeAll();
                 programWindow.openStoreWindow();
             }
         });

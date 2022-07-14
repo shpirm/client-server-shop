@@ -14,12 +14,29 @@ import java.io.IOException;
 
 public class ProductPanel extends JPanel {
     private Product product;
+
+    public ProgramWindow getProgramWindow() {
+        return programWindow;
+    }
+
     private ProgramWindow programWindow;
     private JTextArea nameArea;
     private JTextArea priceArea;
     private JTextArea numberArea;
     private JTextArea brandArea;
     private JTextArea descriptionArea;
+
+    public JFrame getReduceProductWindow() {
+        return reduceProductWindow;
+    }
+
+    private JFrame reduceProductWindow;
+
+    public JFrame getAdProductWindow() {
+        return adProductWindow;
+    }
+
+    private JFrame adProductWindow;
 
     ProductPanel(Product product, ProgramWindow programWindow) {
         this.product = product;
@@ -253,7 +270,7 @@ public class ProductPanel extends JPanel {
             @Override //інтерфейс додавання одиниць товару
             public void actionPerformed(ActionEvent e) {
                 JFrame adProductWindow = new JFrame();
-                openAddProductWindow(adProductWindow);
+                openAddProductWindow();
                 revalidate();
             }
         });
@@ -292,7 +309,8 @@ public class ProductPanel extends JPanel {
         return buttonsPanel;
     }
 
-    private void openAddProductWindow(JFrame adProductWindow) {
+    private void openAddProductWindow() {
+        adProductWindow = new JFrame();
         adProductWindow.setSize(400, 150);
         adProductWindow.setLocationRelativeTo(null);
         JPanel northPanel = new JPanel();
@@ -334,7 +352,7 @@ public class ProductPanel extends JPanel {
     }
 
     private void openReduceProductWindow() {
-        JFrame reduceProductWindow = new JFrame();
+        reduceProductWindow = new JFrame();
         reduceProductWindow.setSize(400, 150);
         reduceProductWindow.setLocationRelativeTo(null);
         JPanel northPanel = new JPanel();
@@ -358,104 +376,14 @@ public class ProductPanel extends JPanel {
         addProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String s = textField.getText();
-                if (s.matches("[0-9]*")) {
-                    if (product.getNumber() == 0) {
-                        JFrame ad1 = new JFrame();
-                        ad1.setSize(400, 150);
-                        ad1.setLocationRelativeTo(null);
-                        JPanel northPanel = new JPanel();
-                        northPanel.setBackground(new Color(198, 233,
-                                243));
-                        ad1.add(northPanel);
-                        JPanel sPanel = new JPanel();
-                        sPanel.setBackground(new Color(198, 233,
-                                243));
-                        ad1.add(sPanel, BorderLayout.SOUTH);
-                        JLabel label = new JLabel("Цього товару немає на складі!");
-                        label.setFont(new Font(Font.SERIF,
-                                Font.PLAIN, 20));
-                        northPanel.add(label);
-
-                        label.setHorizontalAlignment(SwingConstants.CENTER);
-                        JButton ok = new JButton("OK");
-                        ok.setBackground(new Color(128, 118, 146));
-                        ok.setFont(new Font(Font.SERIF, Font.PLAIN,
-                                18));
-                        ok.setForeground(new Color(250, 250, 250));
-                        sPanel.add(ok, BorderLayout.SOUTH);
-                        ok.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent
-                                                                e) {
-                                ad1.setVisible(false);
-
-                                reduceProductWindow.setVisible(false);
-
-                                programWindow.remove(ProductPanel.this);
-
-                                programWindow.openProductWindow(product);
-                            }
-                        });
-                        ad1.setVisible(true);
-                    } else {
-                        JFrame ad1 = new JFrame();
-                        ad1.setSize(400, 150);
-                        ad1.setLocationRelativeTo(null);
-                        JPanel northPanel1 = new JPanel();
-                        JPanel southPanel1 = new JPanel(new
-                                GridLayout(1, 1));
-                        ad1.add(northPanel1, BorderLayout.CENTER);
-                        ad1.add(southPanel1, BorderLayout.SOUTH);
-                        northPanel1.setBackground(new Color(236, 234,
-                                232));
-                        southPanel1.setBackground(new Color(198, 233,
-                                243));
-                        JLabel label = new JLabel("Ви впевнені?");
-                        label.setFont(new Font(Font.SERIF,
-                                Font.PLAIN, 20));
-                        JButton yes = new JButton("Так");
-                        JButton no = new JButton("Скасувати");
-                        yes.setBackground(new Color(128, 118, 146));
-                        yes.setFont(new Font(Font.SERIF, Font.PLAIN,
-                                18));
-                        yes.setForeground(new Color(250, 250, 250));
-                        northPanel1.add(label, BorderLayout.CENTER);
-                        southPanel1.add(yes, BorderLayout.WEST);
-                        southPanel1.add(no, BorderLayout.EAST);
-                        ad1.setVisible(true);
-                        yes.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent
-                                                                e) {
-                                product.remove(Integer.valueOf(s));
-
-                                reduceProductWindow.setVisible(false);
-                                ad1.setVisible(false);
-
-                                programWindow.remove(ProductPanel.this);
-
-                                programWindow.openProductWindow(product);
-                            }
-                        });
-                        no.setBackground(new Color(128, 118, 146));
-                        no.setFont(new Font(Font.SERIF, Font.PLAIN,
-                                18));
-                        no.setForeground(new Color(250, 250, 250));
-                        no.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent
-                                                                e) {
-                                ad1.setVisible(false);
-
-                                reduceProductWindow.setVisible(false);
-
-                                programWindow.remove(ProductPanel.this);
-
-                                programWindow.openProductWindow(product);
-                            }
-                        });
-                    }
+                removeAll();
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_AMOUNT_REDUCE,
+                            new JSONObject().put("product", product.getName())
+                                    .put("amount", textField.getText())
+                    );
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
                 }
             }
         });
@@ -489,28 +417,24 @@ public class ProductPanel extends JPanel {
         yes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if (programWindow.getCurrentGroup()!=null) {
-//
-//                    programWindow.getCurrentGroup().deleteProduct(product.getName());
-//                    programWindow.remove(ProductPanel.this);
-//
-//                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
-//                    ad1.setVisible(false);
-//                } else {
-//                    product.setDeleted(true);
-//                    programWindow.openStoreWindow();
-//                    ad1.setVisible(false);
-//                }
-//            }
-//        });
-//        no.setBackground(new Color(128, 118, 146));
-//        no.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
-//        no.setForeground(new Color(250, 250, 250));
-//        no.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                ad1.setVisible(false);
-//            }
+                ad1.setVisible(false);
+                removeAll();
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.PRODUCT_DELETE,
+                            new JSONObject().put("product", product.getName())
+                    );
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+        });
+        no.setBackground(new Color(128, 118, 146));
+        no.setFont(new Font(Font.SERIF, Font.PLAIN, 18));
+        no.setForeground(new Color(250, 250, 250));
+        no.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ad1.setVisible(false);
             }
         });
     }

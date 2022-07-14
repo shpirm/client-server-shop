@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerSender extends Thread{
-    private static final int THREAD_AMOUNT = 10;
+    private static final int THREAD_AMOUNT = 3;
 
     private boolean shutdown;
     private ExecutorService service;

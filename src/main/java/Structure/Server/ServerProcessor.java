@@ -13,19 +13,23 @@ import Structure.Packet.Packet;
 import Structure.Utility.Encryptor;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 
 public class ServerProcessor extends Thread {
-    private static final int THREAD_AMOUNT = 10;
+    private static final int THREAD_AMOUNT = 3;
 
     private boolean shutdown;
     private ExecutorService service;
@@ -170,15 +174,21 @@ public class ServerProcessor extends Thread {
             case GROUP_INSERT -> {
                 String name = String.valueOf(jsonObject.get("name"));
                 String description = String.valueOf(jsonObject.get("description"));
-                synchronized (shopDatabase) {
-                    shopDatabase.insertGroup(name, description);
-                }
+                try {
+                    synchronized (shopDatabase) {
+                        shopDatabase.insertGroup(name, description);
+                    }
 
-                objAnswer.put("name", name);
-                objAnswer.put("description", description);
-                objAnswer.put("answer", "Group " + name + " added!");
-                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_GROUP_SUCCESS,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                    objAnswer.put("name", name);
+                    objAnswer.put("description", description);
+                    objAnswer.put("answer", "Group " + name + " added!");
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_INSERT_SUCCESS,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (SQLException e) {
+                    jsonObject.put("answer", new SQLException("Name must be unique."));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_INSERT_ERROR,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                }
             }
             case GROUP_LIST -> {
                 JSONArray arr = new JSONArray();
@@ -225,20 +235,30 @@ public class ServerProcessor extends Thread {
                         objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
             }
             case PRODUCT_INSERT -> {
-                synchronized (shopDatabase) {
-                    shopDatabase.insertProduct(
-                            String.valueOf(jsonObject.get("name")),
-                            jsonObject.getInt("amount"),
-                            jsonObject.getDouble("price"),
-                            String.valueOf(jsonObject.get("group")),
-                            String.valueOf(jsonObject.get("brand")),
-                            String.valueOf(jsonObject.get("description")));
-                }
+                try {
+                    synchronized (shopDatabase) {
+                        shopDatabase.insertProduct(
+                                String.valueOf(jsonObject.get("name")),
+                                jsonObject.getInt("amount"),
+                                jsonObject.getDouble("price"),
+                                String.valueOf(jsonObject.get("group")),
+                                String.valueOf(jsonObject.get("brand")),
+                                String.valueOf(jsonObject.get("description")));
+                    }
 
-                String name = String.valueOf(jsonObject.get("name"));
-                jsonObject.put("answer", "Product " + name + " added!");
-                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.INSERT_PRODUCT_SUCCESS,
-                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                    String name = String.valueOf(jsonObject.get("name"));
+                    jsonObject.put("answer", "Product " + name + " added!");
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_SUCCESS,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (SQLException e) {
+                    jsonObject.put("answer", new SQLException("Name must be unique."));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_ERROR,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (JSONException e) {
+                    jsonObject.put("answer", new SQLException("Incorrect input values."));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_ERROR,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                }
             }
             case GROUP_DELETE -> {
                 String name = String.valueOf(jsonObject.get("group name"));
@@ -247,7 +267,7 @@ public class ServerProcessor extends Thread {
                 }
 
                 jsonObject.put("answer", "Group " + name + " deleted!");
-                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.DELETE_GROUP,
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_DELETE,
                         jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
             }
             case PRODUCT_FIND ->{
@@ -271,34 +291,105 @@ public class ServerProcessor extends Thread {
                         objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
             }
             case PRODUCT_UPDATE -> {
-                synchronized (shopDatabase) {
-                    shopDatabase.updateProduct(
-                            String.valueOf(jsonObject.get("old name")),
-                            String.valueOf(jsonObject.get("new name")),
-                            jsonObject.getInt("amount"),
-                            jsonObject.getDouble("price"),
-                            String.valueOf(jsonObject.get("brand")),
-                            String.valueOf(jsonObject.get("description")));
-                }
+                try {
+                    synchronized (shopDatabase) {
+                        shopDatabase.updateProduct(
+                                String.valueOf(jsonObject.get("old name")),
+                                String.valueOf(jsonObject.get("new name")),
+                                jsonObject.getInt("amount"),
+                                jsonObject.getDouble("price"),
+                                String.valueOf(jsonObject.get("brand")),
+                                String.valueOf(jsonObject.get("description")));
+                    }
 
-                objAnswer.put("answer", "Product " + jsonObject.get("old name") + " updated!");
-                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_SUCCESS,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                    objAnswer.put("answer", "Product " + jsonObject.get("old name") + " updated!");
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_SUCCESS,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (SQLException e) {
+                    jsonObject.put("answer", new SQLException("Name must be unique."));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_ERROR,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (JSONException e) {
+                    jsonObject.put("answer", new SQLException("Incorrect input values."));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_ERROR,
+                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                }
             }
             case PRODUCT_AMOUNT_ADD -> {
                 synchronized (shopDatabase) {
-                    shopDatabase.updateProduct(
-                            String.valueOf(jsonObject.get("old name")),
+                    shopDatabase.addProductAmount(
                             String.valueOf(jsonObject.get("product")),
-                            jsonObject.getInt("amount"),
-                            jsonObject.getDouble("price"),
-                            String.valueOf(jsonObject.get("brand")),
-                            String.valueOf(jsonObject.get("description")));
+                            jsonObject.getInt("amount"));
                 }
 
-                objAnswer.put("answer", "Product " + jsonObject.get("old name") + " updated!");
-                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_SUCCESS,
+                objAnswer.put("answer", "Product " + jsonObject.get("product") + " updated!");
+                objAnswer.put("product", jsonObject.get("product"));
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_ADD,
                         objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+            case PRODUCT_AMOUNT_REDUCE -> {
+                try {
+                    synchronized (shopDatabase) {
+                        shopDatabase.reduceProductAmount(
+                                String.valueOf(jsonObject.get("product")),
+                                jsonObject.getInt("amount"));
+                    }
+
+                    objAnswer.put("answer", "Product " + jsonObject.get("product") + " updated!");
+                    objAnswer.put("product", jsonObject.get("product"));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_REDUCE_SUCCESS,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                } catch (SQLException e) {
+                    objAnswer.put("answer", e);
+                    objAnswer.put("product", jsonObject.get("product"));
+                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_REDUCE_ERROR,
+                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                }
+            }
+            case SHOP_UPDATE -> {
+
+                ArrayList<Product> array = new ArrayList<>();
+                ArrayList<Group> groups = new ArrayList<>();
+
+                synchronized (shopDatabase) {
+                    groups = shopDatabase.getGroupList();
+                }
+                JSONArray arrGroup = new JSONArray();
+                for (Group group: groups) {
+                    synchronized (shopDatabase) {
+                        array = shopDatabase.getAllProductsInGroup(group.getName());
+                    }
+                    JSONArray arr = new JSONArray();
+                    for (Product product : array) {
+                        JSONObject userObj = new JSONObject();
+                        userObj.put("name", product.getName());
+                        userObj.put("amount", product.getNumber());
+                        userObj.put("price", product.getPrice());
+                        userObj.put("brand", product.getBrand());
+                        userObj.put("description", product.getDescription());
+                        arr.put(userObj);
+                    }
+                    arrGroup.put(new JSONObject()
+                            .put("name", group.getName())
+                            .put("description", group.getDescription())
+                            .put("products", arr));
+                }
+
+
+                objAnswer.put("shop", arrGroup);
+
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.SHOP_UPDATE_LIST,
+                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+            }
+            case PRODUCT_DELETE -> {
+                String name = String.valueOf(jsonObject.get("product"));
+                synchronized (shopDatabase) {
+                    shopDatabase.deleteProduct(name);
+                }
+
+                jsonObject.put("answer", "Product " + name + " deleted!");
+                packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_DELETE,
+                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
             }
         }
 
