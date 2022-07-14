@@ -7,6 +7,7 @@ import Structure.Commands.OtherCommand;
 import Database.Connections;
 import Structure.Commands.UserCommand;
 import Structure.Packet.Packet;
+import Structure.Utility.Cypher;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,7 +39,7 @@ public class ClientProcessor extends Thread {
                         command(queueOfPackets.poll());
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -133,7 +134,7 @@ public class ClientProcessor extends Thread {
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getStorePanel());
 
                 User.getInstance().setConnection(ClientTCP.clientMapID.get(packet.getBMsg().getBUserId()));
-                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put(" ", " "));
+                User.getInstance().getConnection().sendMessage(UserCommand.GROUP_LIST, new JSONObject().put("text", "text"));
             }
             case ACCESS_ERROR -> {
                 ConnectionsPanel panel = (ConnectionsPanel) CurrentPanel.getInstance().getPanel();
@@ -310,8 +311,8 @@ public class ClientProcessor extends Thread {
 
                 panel.removeAll();
                 panel.getProgramWindow().openGroupWindow(panel.getProgramWindow().getCurrentGroup());
-
                 CurrentPanel.getInstance().setPanel(panel.getProgramWindow().getGroupPanel());
+
                 User.getInstance().getConnection().sendMessage(UserCommand.GROUP_PRODUCT_LIST,
                         new JSONObject().put("group name", panel.getProgramWindow().getCurrentGroup().getName()));
             }

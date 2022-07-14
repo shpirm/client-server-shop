@@ -377,7 +377,7 @@ public class ConnectionsPanel extends JPanel {
 
                     User.getInstance().setConnection(clientTCP);
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println(ex);
                 }
             }
         });

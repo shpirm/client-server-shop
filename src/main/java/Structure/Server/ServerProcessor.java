@@ -10,12 +10,14 @@ import Database.Connections;
 import Database.LoginDatabase;
 import Structure.Packet.Message;
 import Structure.Packet.Packet;
+import Structure.Utility.Cypher;
 import Structure.Utility.Encryptor;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -29,7 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 
 public class ServerProcessor extends Thread {
-    private static final int THREAD_AMOUNT = 3;
+    private static final int THREAD_AMOUNT = 5;
 
     private boolean shutdown;
     private ExecutorService service;
@@ -116,16 +118,14 @@ public class ServerProcessor extends Thread {
                     }
 
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_SUCCESS,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                            objAnswer));
 
                 } else {
                     String str = "Connect rejected!";
                     objAnswer.put("answer", str);
 
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.CONNECT_ERROR,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
-
-                    // ServerTCP.getInstance(3333, "123").stopConnection(packet.getBMsg().getBUserId());
+                            objAnswer));
                 }
             }
             case ACCESS_REQUEST -> {
@@ -137,40 +137,16 @@ public class ServerProcessor extends Thread {
                         objAnswer.put("answer", str);
 
                         packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_SUCCESS,
-                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                                objAnswer));
                     } else {
                         String str = "Access rejected!";
                         objAnswer.put("answer", str);
 
                         packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.ACCESS_ERROR,
-                                objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                                objAnswer));
                     }
                 }
             }
-//                case USER_LIST -> {
-//                    JSONArray arr = new JSONArray();
-//                    ArrayList<Connections> array = new ArrayList<>();
-//
-//                    synchronized (loginDatabase) {
-//                        array = loginDatabase.getUserList();
-//                    }
-//                    System.out.println(array);
-//                    for (Connections user : array) {
-//                        JSONObject userObj = new JSONObject();
-//                        userObj.put("login", user.getLogin());
-//                        userObj.put("host", user.getHost());
-//                        userObj.put("port", user.getPort());
-//                        arr.put(userObj);
-//                    }
-//
-//                    JSONObject connection = new JSONObject();
-//                    connection.put("users", arr);
-//                    System.out.println(connection);
-//
-//                    packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.USER_LIST,
-//                            connection.toString().getBytes(StandardCharsets.UTF_8)));
-//                    sender.sendMessage(packet.getBMsg().getBUserId(), packetAnswer);
-//                }
             case GROUP_INSERT -> {
                 String name = String.valueOf(jsonObject.get("name"));
                 String description = String.valueOf(jsonObject.get("description"));
@@ -183,11 +159,11 @@ public class ServerProcessor extends Thread {
                     objAnswer.put("description", description);
                     objAnswer.put("answer", "Group " + name + " added!");
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_INSERT_SUCCESS,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                            objAnswer));
                 } catch (SQLException e) {
                     jsonObject.put("answer", new SQLException("Name must be unique."));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_INSERT_ERROR,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 }
             }
             case GROUP_LIST -> {
@@ -208,7 +184,7 @@ public class ServerProcessor extends Thread {
                 objAnswer.put("groups", arr);
 
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_LIST,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        objAnswer));
             }
             case GROUP_PRODUCT_LIST -> {
                 JSONArray arr = new JSONArray();
@@ -232,7 +208,7 @@ public class ServerProcessor extends Thread {
                 objAnswer.put("group", String.valueOf(jsonObject.get("group name")));
 
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_PRODUCT_LIST,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        objAnswer));
             }
             case PRODUCT_INSERT -> {
                 try {
@@ -249,15 +225,15 @@ public class ServerProcessor extends Thread {
                     String name = String.valueOf(jsonObject.get("name"));
                     jsonObject.put("answer", "Product " + name + " added!");
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_SUCCESS,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 } catch (SQLException e) {
                     jsonObject.put("answer", new SQLException("Name must be unique."));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_ERROR,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 } catch (JSONException e) {
                     jsonObject.put("answer", new SQLException("Incorrect input values."));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_INSERT_ERROR,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 }
             }
             case GROUP_DELETE -> {
@@ -268,7 +244,7 @@ public class ServerProcessor extends Thread {
 
                 jsonObject.put("answer", "Group " + name + " deleted!");
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.GROUP_DELETE,
-                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                        jsonObject));
             }
             case PRODUCT_FIND ->{
                 JSONArray arr = new JSONArray();
@@ -288,7 +264,7 @@ public class ServerProcessor extends Thread {
                 }
                 objAnswer.put("products", arr);
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_FIND_LIST,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        objAnswer));
             }
             case PRODUCT_UPDATE -> {
                 try {
@@ -304,15 +280,15 @@ public class ServerProcessor extends Thread {
 
                     objAnswer.put("answer", "Product " + jsonObject.get("old name") + " updated!");
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_SUCCESS,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                            objAnswer));
                 } catch (SQLException e) {
                     jsonObject.put("answer", new SQLException("Name must be unique."));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_ERROR,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 } catch (JSONException e) {
                     jsonObject.put("answer", new SQLException("Incorrect input values."));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_UPDATE_ERROR,
-                            jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                            jsonObject));
                 }
             }
             case PRODUCT_AMOUNT_ADD -> {
@@ -325,7 +301,7 @@ public class ServerProcessor extends Thread {
                 objAnswer.put("answer", "Product " + jsonObject.get("product") + " updated!");
                 objAnswer.put("product", jsonObject.get("product"));
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_ADD,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        objAnswer));
             }
             case PRODUCT_AMOUNT_REDUCE -> {
                 try {
@@ -338,12 +314,12 @@ public class ServerProcessor extends Thread {
                     objAnswer.put("answer", "Product " + jsonObject.get("product") + " updated!");
                     objAnswer.put("product", jsonObject.get("product"));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_REDUCE_SUCCESS,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                            objAnswer));
                 } catch (SQLException e) {
                     objAnswer.put("answer", e);
                     objAnswer.put("product", jsonObject.get("product"));
                     packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_AMOUNT_REDUCE_ERROR,
-                            objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                            objAnswer));
                 }
             }
             case SHOP_UPDATE -> {
@@ -379,7 +355,7 @@ public class ServerProcessor extends Thread {
                 objAnswer.put("shop", arrGroup);
 
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.SHOP_UPDATE_LIST,
-                        objAnswer.toString().getBytes(StandardCharsets.UTF_8)));
+                        objAnswer));
             }
             case PRODUCT_DELETE -> {
                 String name = String.valueOf(jsonObject.get("product"));
@@ -389,105 +365,9 @@ public class ServerProcessor extends Thread {
 
                 jsonObject.put("answer", "Product " + name + " deleted!");
                 packetAnswer = Encryptor.encrypt(sendAnswer(packet, OtherCommand.PRODUCT_DELETE,
-                        jsonObject.toString().getBytes(StandardCharsets.UTF_8)));
+                        jsonObject));
             }
         }
-
-//                case PRODUCT_INSERT -> {
-//                    synchronized (db) {
-//                        db.insertProduct(
-//                                String.valueOf(jsonObject.get("ProductName")),
-//                                jsonObject.getInt("ProductAmount"),
-//                                jsonObject.getDouble("ProductPrice"),
-//                                String.valueOf(jsonObject.get("GroupName")));
-//                    }
-//                    System.out.println("User " + packet.getBPktId() + "send command: " + command + "Info = " + jsonObject);
-//                }
-//                case PRODUCT_UPDATE -> {
-//                    synchronized (db) {
-//                        answer = parseStringToByte(db.readProduct(
-//                                String.valueOf(jsonObject.get("ProductName"))).toString());
-//                    }
-//
-//                }
-//                case PRODUCT_DELETE -> {
-//                    synchronized (db) {
-//                        db.deleteProduct(
-//                                String.valueOf(jsonObject.get("ProductName")));
-//                    }
-//                }
-//                case PRODUCT_LIST -> {
-//                    synchronized (db) {
-//                        answer = parseStringToByte(db.getProductList(
-//                                String.valueOf(jsonObject.get("Criteria"))).toString());
-//                    }
-//                }
-//                case PRODUCT_NAME -> {
-//                    synchronized (db) {
-//                        db.updateProductName(
-//                                String.valueOf(jsonObject.get("ProductName")),
-//                                String.valueOf(jsonObject.get("NewProductName")));
-//                    }
-//                }
-//                case PRODUCT_PRICE -> {
-//                    synchronized (db) {
-//                        db.updateProductPrice(
-//                                String.valueOf(jsonObject.get("ProductName")),
-//                                jsonObject.getDouble("ProductPrice"));
-//                    }
-//                }
-//                case PRODUCT_AMOUNT -> {
-//                    synchronized (db) {
-//                        db.updateProductAmount(
-//                                String.valueOf(jsonObject.get("ProductName")),
-//                                jsonObject.getInt("ProductAmount"));
-//                    }
-//                }
-//                case PRODUCT_GROUP -> {
-//                    synchronized (db) {
-//                        db.updateProductGroup(
-//                                String.valueOf(jsonObject.get("ProductName")),
-//                                String.valueOf(jsonObject.get("GroupName")));
-//                    }
-//                }
-//                case GROUP_INSERT -> {
-//                    synchronized (db) {
-//                        db.insertGroup(
-//                                String.valueOf(jsonObject.get("GroupName")));
-//                    }
-//                }
-//                case GROUP_READ -> {
-//                    synchronized (db) {
-//                        answer = parseStringToByte(db.readGroup(
-//                                String.valueOf(jsonObject.get("GroupName"))).toString());
-//                    }
-//                }
-//                case GROUP_DELETE -> {
-//                    synchronized (db) {
-//                        db.deleteGroup(
-//                                String.valueOf(jsonObject.get("GroupName")));
-//                    }
-//                }
-//                case GROUP_LIST -> {
-//                    synchronized (db) {
-//                        answer = parseStringToByte(db.getGroupList(
-//                                String.valueOf(jsonObject.get("Criteria"))).toString());
-//                    }
-//                }
-//                case GROUP_NAME -> {
-//                    synchronized (db) {
-//                        db.updateGroupName(
-//                                String.valueOf(jsonObject.get("GroupName")),
-//                                String.valueOf(jsonObject.get("NewGroupName")));
-//                    }
-//                }
-//                default -> throw new SQLException("Unexpected command. ");
-//            }
-//        } catch (SQLiteException e) {
-//            answerCommand = UserCommand.ERROR;
-//        } catch (SQLException e) {
-//            answerCommand = UserCommand.ERROR;
-//        }
         sender.sendMessage(packet.getBMsg().getBUserId(), packetAnswer);
     }
 
@@ -495,8 +375,9 @@ public class ServerProcessor extends Thread {
         return Objects.equals(ServerTCP.getInstance(3333, "123").getPassword(), checkPassword);
     }
 
-    private Packet sendAnswer(Packet packet, OtherCommand command, byte[] message) {
+    private Packet sendAnswer(Packet packet, OtherCommand command, JSONObject object) throws UnsupportedEncodingException {
 
+        byte[] message = object.toString().getBytes("utf-8");
         final int COMMAND_SIZE = message.length;
         final int MESSAGE_SIZE = Integer.BYTES + Integer.BYTES + COMMAND_SIZE;
 

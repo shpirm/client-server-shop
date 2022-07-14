@@ -207,26 +207,6 @@ public class ProductPanel extends JPanel {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-
-//                if(nameArea.getText().trim().equals("")){
-//                    showIllegalFormat("Назву");
-//                    nameArea.setText(product.getName().trim());
-//                }else product.setName(nameArea.getText().trim());
-//
-//                if(!(priceArea.getText().trim().matches("[0-9]{1,13}(\\.[0-9]*)?"))){
-//                    showIllegalFormat("Ціну");
-//                    priceArea.setText(product.getPrice() + "");
-//                } else product.setPrice(Double.valueOf(priceArea.getText().trim()));
-//                if (!(numberArea.getText().trim().matches("[0-9]*"))) {
-//                    showIllegalFormat("Кількість");
-//                    numberArea.setText(product.getNumber() + "");
-//                } else product.setNumber(Integer.valueOf(numberArea.getText().trim()));
-//                if(brandArea.getText().trim().equals("")){
-//                    showIllegalFormat("Назву бренду");
-//                    brandArea.setText(product.getBrand().trim());
-//                } else product.setBrand(brandArea.getText().trim());
-//
-//                product.setDescription(descriptionArea.getText().trim());
             }
         });
         savePanel.add(saveButton);
@@ -251,12 +231,13 @@ public class ProductPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeAll();
-                if (programWindow.getSearchPanel() != null) {
-                    programWindow.openStoreWindow();
-                }
-                if (programWindow.getCurrentGroup() != null) {
-
-                    programWindow.openGroupWindow(programWindow.getCurrentGroup());
+                CurrentPanel.getInstance().setPanel(programWindow.getGroupPanel());
+                programWindow.openGroupWindow(programWindow.getCurrentGroup());
+                try {
+                    User.getInstance().getConnection().sendMessage(UserCommand.GROUP_PRODUCT_LIST,
+                            new JSONObject().put("group name", programWindow.getCurrentGroup().getName()));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
